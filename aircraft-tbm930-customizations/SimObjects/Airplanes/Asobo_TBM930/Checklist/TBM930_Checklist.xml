@@ -1,0 +1,387 @@
+<?xml version="1.0" encoding="Windows-1252"?>
+
+<SimBase.Document Type="Checklist" version="1,0">
+	<Checklist.Checklist>
+	
+		<IncludeCheckpointLibrary FileName="CheckpointsLibrary\\Asobo_DefaultCheckpointLibrary.xml"/>
+		<IncludeCheckpointLibrary FileName="SimObjects\\Airplanes\\Asobo_TBM930\\Checklist\\Library.xml"/>
+
+		<Step ChecklistStepId="PREFLIGHT_GATE">
+
+			<!-- Inside inspection -->
+			<Page SubjectTT="TT:GAME.CHECKLIST_INSIDE_INSPECTION">
+				<!--			<Checkpoint ReferenceId="Doors_Closed_And_Locked"/>-->
+				<!--			<Checkpoint ReferenceId="BAGGAGE_STOWED"/>-->
+				<!--			<Checkpoint ReferenceId="EMERGENCY_EXIT_PIN_REMOVED"/>-->
+				<!--			<Checkpoint ReferenceId="SEAT_PEDALS_HARNESS_ADJUST_LOCK"/>-->
+				<!--			<Checkpoint ReferenceId="PASSENGER_OXYGEN_STBY"/>-->
+				<!--			<Checkpoint ReferenceId="OXYGEN_ON"/>-->
+				<!--			<Checkpoint ReferenceId="CREW_OXYGEN_MASKS_TEST"/>-->
+				<Checkpoint ReferenceId="TBM_EXT_LIGHTS_OFF"/>
+				<Checkpoint ReferenceId="TBM_INT_LIGHTS_OFF"/>
+				<Checkpoint ReferenceId="TBM_CRASH_LEVER_DOWN"/>
+				<Checkpoint ReferenceId="TBM_STARTER_OFF"/>
+				<Checkpoint ReferenceId="TBM_IGNITION_AUTO"/>
+				<Checkpoint ReferenceId="TBM_AUX_BP_OFF"/>
+				<Checkpoint ReferenceId="TBM_FUEL_SEL_MAN"/>
+				<Checkpoint ReferenceId="TBM_AP_TRIMS_OFF"/>
+				<!--		<Checkpoint ReferenceId="A_C_OFF"/> -->
+				<!--			<Checkpoint ReferenceId="CB_LIGHTS_OFF"/>-->
+				<!--			<Checkpoint ReferenceId="MICRO_MASK_MICRO_GUARDED"/>-->
+				<Checkpoint ReferenceId="TBM_DE_ICE_SYSTEM_ALL_OFF"/>
+				<Checkpoint ReferenceId="TBM_INERT_SEP_OFF"/> 
+				<Checkpoint ReferenceId="Parking_Brake_Set">
+					<CheckpointDesc SubjectTT="TT:GAME.CHECKLIST_PARK_BRAKE" ExpectationTT="TT:GAME.CHECKLIST_ON"/>
+				</Checkpoint>
+				<Checkpoint ReferenceId="Landing_Gear_Down">
+					<CheckpointDesc SubjectTT="TT:GAME.CHECKLIST_LANDING_GEAR_LEVER" ExpectationTT="TT:GAME.CHECKLIST_DN"/>
+				</Checkpoint>
+				<!--			<Checkpoint ReferenceId="DUMP_NORM_GUARDED"/>-->
+				<Checkpoint ReferenceId="BLEED_OFF"/>
+				<!--			<Checkpoint ReferenceId="HOT_AIR_FLOW_FLOOR"/>-->
+				<!--			<Checkpoint ReferenceId="MAN_OVRD_BACKWARD_NOTCHED"/>-->
+				<Checkpoint ReferenceId="TBM_THROTTLE_CUT_OFF"/>
+				<Checkpoint ReferenceId="FUEL_TANK_SELECTOR_OPEN_L_OR_R"/>
+				<!--			<Checkpoint ReferenceId="ALTERNATE_STATIC_SOURCE_PUSHED"/>-->
+				<!--			<Checkpoint ReferenceId="EMERGENCY_RAM_AIR_PUSHED"/>-->
+				<!--			<Checkpoint ReferenceId="ESS_BUS_TIE_NORM_GUARDED"/>-->
+				<!--			<Checkpoint ReferenceId="BREAKERS_ALL_PUSHED_IN"/>-->
+				<!--			<Checkpoint ReferenceId="EMERGENCY_LANDING_GEAR_LEVER_CHECK"/>-->
+			</Page>
+
+			<!-- BEFORE STARTING ENGINE -->
+			<Page SubjectTT="TT:GAME.CHECKLIST_BEFORE_STARTING_ENGINE">
+				<Checkpoint ReferenceId="TBM_CRASH_LEVER_UP"/>
+				<!--			<Checkpoint ReferenceId="ATIS_START_CLEARANCE_COPIED_AS_REQUIRED"/>-->
+				<Checkpoint ReferenceId="TBM_SOURCE_BATT_OR_GPU"/>
+				<Checkpoint ReferenceId="TBM_GENERATOR_MAIN"/>
+				<!--			<Checkpoint ReferenceId="AUDIO_ALARMS_TEST"/>-->
+				<Checkpoint ReferenceId="TBM_DE_ICE_SYSTEM_LIGHTS_TEST"/>
+				<Checkpoint ReferenceId="TBM_LANDING_GEAR_LIGHTS_CHECK_DOWN_TEST"/>
+				<!--			<Checkpoint ReferenceId="MFD_INITIALIZE"/>-->
+				<Checkpoint ReferenceId="TBM_FUEL_ON_BOARD_CHECK"/>
+        <!--	<Checkpoint ReferenceId="RESIDUAL_ITT_MOTORING_IF_ITT_1_CHECK"/> -->
+				<!--			<Checkpoint ReferenceId="VOLTS_BATT_GPU"/>-->
+				<!--			<Checkpoint ReferenceId="CAS_CHECK"/>-->
+			</Page>
+
+			<!-- ENGINE START -->
+			<Page SubjectTT="TT:GAME.CHECKLIST_ENGINE_START">
+
+				<Block SubjectTT="TT:GAME.CHECKLIST_MOTORING_IF_RESIDUAL_ITT">
+					<BlockCondition>
+						<Operator OpType="GREATER">
+							<Val SimVarName="TURB ENG ITT:1" Units="Celsius"/>
+							<Val Value="150"/>
+						</Operator>
+					</BlockCondition>
+					<Checkpoint ReferenceId="TBM_IGNITION_OFF"/>
+					<Checkpoint ReferenceId="TBM_AUX_BP_ON"/>
+					<!--			<Checkpoint ReferenceId="CAS_MSG_AUX_BOOST_PMP_ON"/>-->
+					<Checkpoint ReferenceId="Propeller_Area_Clear"/>
+					<Checkpoint ReferenceId="TBM_STARTER_ON_2_SEC_THEN_OFF"/>
+					<Checkpoint ReferenceId="TBM_STARTER_ABORT_AFTER_30_SEC_MAX_THEN_OFF"/>
+					<Checkpoint ReferenceId="TBM_AUX_BP_OFF"/>
+				</Block>
+
+				<Checkpoint ReferenceId="TBM_IGNITION_AUTO"/>
+				<Checkpoint ReferenceId="TBM_AUX_BP_ON"/>
+				<!--			<Checkpoint ReferenceId="CAS_MSG_AUX_BOOST_PMP_ON"/>-->
+				<Checkpoint ReferenceId="Propeller_Area_Clear"/>
+				<Checkpoint ReferenceId="TBM_STARTER_ON_2_SEC_THEN_OFF"/>
+				<Checkpoint ReferenceId="TBM_THROTTLE_SET_LOIDLE_WHEN_NG_13">
+					<ForceCamera name="Yokes"/>
+				</Checkpoint>
+				<Checkpoint ReferenceId="ITT_MAX_870_FOR_20_SECONDS_1000_FO"/>
+				<Checkpoint ReferenceId="NG_30_BEFORE_30_SECONDS_50_BEFORE"/>
+				<Checkpoint ReferenceId="TBM_OIL_PRESS_TEMP_CHECK"/>
+				<Checkpoint ReferenceId="AUTOMATIC_STARTER_OFF_WHEN_NG_52"/>
+			</Page>
+
+			<!-- AFTER ENGINE START -->
+			<Page SubjectTT="TT:GAME.CHECKLIST_AFTER_ENGINE_START">
+				<Checkpoint ReferenceId="TBM_THROTTLE_LO_IDLE_TO_FLIGHT_IDLE"/>
+				<!--			<Checkpoint ReferenceId="NG_70_PERCENT"/>-->
+				<Checkpoint ReferenceId="TBM_OIL_PRESS_TEMP_CHECK"/>
+				<Checkpoint ReferenceId="TBM_AUX_BP_AUTO"/>
+				<Checkpoint ReferenceId="TBM_FUEL_SEL_AUTO"/>
+				<Checkpoint ReferenceId="TBM_FUEL_SEL_SHIFT_BUTTON_TEST"/>
+				<Checkpoint ReferenceId="TBM_AP_TRIMS_ON"/>
+				<!--			<Checkpoint ReferenceId="GENERATOR_IF_BATT_80_AMPS_ST_BY_TEST"/>-->
+				<Checkpoint ReferenceId="TBM_GENERATOR_MAIN"/>
+				<!--			<Checkpoint ReferenceId="CAS_CHECK"/>-->
+				<!--			<Checkpoint ReferenceId="A_C_AS_REQUIRED"/>-->
+				<Checkpoint ReferenceId="BLEED_AUTO_OR_MAX_DIFF"/>
+			</Page>
+
+			<!-- BEFORE TAXI -->
+			<Page SubjectTT="TT:GAME.CHECKLIST_BEFORE_TAXI">
+				<!--			<Checkpoint ReferenceId="STAND_BY_INSTRUMENTS_CHECK"/>-->
+				<!--			<Checkpoint ReferenceId="DE_ICE_SYSTEM_TEST"/> -->
+				<Checkpoint ReferenceId="TBM_INERT_SEP_ON"/>
+				<Checkpoint ReferenceId="Flight_Control_Free_And_Correct">
+					<CheckpointDesc SubjectTT="TT:GAME.CHECKLIST_FLIGHT_CONTROLS" ExpectationTT="TT:GAME.CHECKLIST_CHECK"/>
+				</Checkpoint>
+				<!--			<Checkpoint ReferenceId="TRIMS_TEST"/>-->
+				<Checkpoint ReferenceId="Flaps_0">
+					<CheckpointDesc SubjectTT="TT:GAME.CHECKLIST_FLAPS" ExpectationTT="TT:GAME.CHECKLIST_UP"/>
+				</Checkpoint>
+				<!--			<Checkpoint ReferenceId="MFD_TOUCHSCREEN_FPL_SET"/>-->
+				<!--			<Checkpoint ReferenceId="MFD_TOUCHSCREEN_LFE_SET_CHECK"/>-->
+				<!--			<Checkpoint ReferenceId="MFD_TOUCHSCREEN_WX_RADAR_STBY"/>-->
+				<Checkpoint ReferenceId="TBM_THROTTLE_FEATHER_TWICE"/>
+				<!--			<Checkpoint ReferenceId="EIS_CHECK"/>-->
+				<!--			<Checkpoint ReferenceId="CAS_CHECK"/>-->
+				<Checkpoint ReferenceId="TBM_Taxi_Lights_On">
+					<CheckpointDesc SubjectTT="TT:GAME.CHECKLIST_TAXI_LIGHTS" ExpectationTT="TT:GAME.CHECKLIST_ON"/> <!-- Add an 's' -->
+				</Checkpoint>
+        <Checkpoint ReferenceId="Parking_Brake_Release">
+          <CheckpointDesc SubjectTT="TT:GAME.CHECKLIST_PARK_BRAKE" ExpectationTT="TT:GAME.CHECKLIST_OFF"/>
+        </Checkpoint>        
+			</Page>
+		</Step>
+
+
+
+		<Step ChecklistStepId="PREFLIGHT_TAXI_OUT">
+
+			<!--BEFORE LINE UP  -->
+			<Page SubjectTT="TT:GAME.CHECKLIST_BEFORE_LINE_UP">
+
+        <Checkpoint ReferenceId="Parking_Brake_Set">
+          <CheckpointDesc SubjectTT="TT:GAME.CHECKLIST_PARK_BRAKE" ExpectationTT="TT:GAME.CHECKLIST_ON"/>
+        </Checkpoint>
+        <Checkpoint ReferenceId="TBM_Landing_Light_On">
+					<CheckpointDesc SubjectTT="TT:GAME.CHECKLIST_LANDING_LIGHTS" ExpectationTT="TT:GAME.CHECKLIST_ON"/> <!-- Add an 's' -->
+				</Checkpoint>
+				<Checkpoint ReferenceId="Navigation_Lights_On"/>
+				<Checkpoint ReferenceId="Strobe_Light_On">
+					<CheckpointDesc SubjectTT="TT:GAME.CHECKLIST_STROBES" ExpectationTT="TT:GAME.CHECKLIST_ON"/> <!-- Add an 's' -->
+				</Checkpoint>
+				<Checkpoint ReferenceId="IGNITION_AUTO_OR_ON_AS_REQUIRED"/>
+				<Checkpoint ReferenceId="TBM_AUX_BP_AUTO"/>
+				<Checkpoint ReferenceId="TBM_FUEL_SEL_AUTO"/>
+				<Checkpoint ReferenceId="TBM_DE_ICE_SYSTEM_AS_REQUIRED"/>
+				<Checkpoint ReferenceId="TBM_PITOT_L_PITOT_R_AND_STALL_HTR_ON"/>
+				<Checkpoint ReferenceId="TBM_INERT_SEP_ON"/> 
+				<Checkpoint ReferenceId="TRIMS_TO"/>
+				<Checkpoint ReferenceId="FLAPS_TAKEOFF">
+					<CheckpointDesc SubjectTT="TT:GAME.CHECKLIST_FLAPS" ExpectationTT="TT:GAME.CHECKLIST_TO"/>
+				</Checkpoint>
+				<!--			<Checkpoint ReferenceId="A_C_AS_REQUIRED"/>-->
+				<Checkpoint ReferenceId="BLEED_AUTO_OR_MAX_DIFF"/>
+				<!--			<Checkpoint ReferenceId="LFE_CHECK"/>-->
+				<!--			<Checkpoint ReferenceId="FUEL_GAGES_IMBALANCE_CHECK"/>-->
+				<!--			<Checkpoint ReferenceId="BATT_50_AMPS_CHECK"/>-->
+				<!--			<Checkpoint ReferenceId="EIS_CHECK"/>-->
+				<!--			<Checkpoint ReferenceId="CAS_CHECK"/>-->
+				<Checkpoint ReferenceId="ALTIMETERS_SETTING_CHECK">
+					<CheckpointDesc SubjectTT="TT:GAME.CHECKLIST_ALTIMETERS_SETTING" ExpectationTT="TT:GAME.CHECKLIST_SET_CHECK"/>
+					<ForceCamera name="AutoPilot"/>
+				</Checkpoint>
+				<!--			<Checkpoint ReferenceId="SID_PROC_SET"/>-->
+				<Checkpoint ReferenceId="ALT_SEL_SET">
+					<ForceCamera name="AutoPilot"/>
+				</Checkpoint>
+				<Checkpoint ReferenceId="XPDR_SQUAWK_SET_AS3000"/>
+			</Page>
+		</Step>
+
+		<Step ChecklistStepId="FLIGHT_RUNWAY">
+		</Step>
+
+
+		<Step ChecklistStepId="FLIGHT_TAKEOFF">
+			<!--TAKEOFF  -->
+			<Page SubjectTT="TT:GAME.CHECKLIST_TAKEOFF">
+				<!--			<Checkpoint ReferenceId="ADI_HSI_HEADINGS_CHECK"/>-->
+				<Checkpoint ReferenceId="PROP_RPM_GREEN_SECTOR"/>
+				<Checkpoint ReferenceId="Brakes_Released"/>
+				<Checkpoint ReferenceId="TBM_TRQ_100_PERCENT">
+					<ForceCamera name="Yokes"/>
+				</Checkpoint>
+				<Checkpoint ReferenceId="ROTATION_SPEED_PITCH_UP_10"/>
+				<Checkpoint ReferenceId="POSITIVE_VERTICAL_SPEED_BRAKES_LANDING_GEAR_UP">
+					<ForceCamera name="PFD"/>
+				</Checkpoint>
+				<Checkpoint ReferenceId="IAS_115_KTS_FLAPS_UP">
+					<ForceCamera name="Yokes"/>
+				</Checkpoint>
+			</Page>
+
+			<!--AFTER TAKEOFF  -->
+			<Page SubjectTT="TT:GAME.CHECKLIST_AFTER_TAKE_OFF">
+				<Checkpoint ReferenceId="LANDING_GEAR_UP">
+					<Clue name="TT:CLUE.LANDING_GEAR_UP"/>
+					<CheckpointDesc SubjectTT="TT:GAME.CHECKLIST_LANDING_GEAR_UP" ExpectationTT="TT:GAME.CHECKLIST_CHECK"/>
+				</Checkpoint>
+				<Checkpoint ReferenceId="Flaps_0">
+					<CheckpointDesc SubjectTT="TT:GAME.CHECKLIST_FLAPS" ExpectationTT="TT:GAME.CHECKLIST_UP"/>
+				</Checkpoint>
+				<Checkpoint ReferenceId="TRQ_MAX_100_CHECK"/>
+				<!--			<Checkpoint ReferenceId="EIS_CHECK"/>-->
+				<!--			<Checkpoint ReferenceId="CAS_CHECK"/>-->
+				<Checkpoint ReferenceId="TBM_DE_ICE_SYSTEM_AS_REQUIRED"/>
+				<Checkpoint ReferenceId="TBM_INERT_SEP_AS_REQUIRED"/>
+			</Page>
+
+			<!--CLIMB  -->
+			<Page SubjectTT="TT:GAME.CHECKLIST_CLIMB">
+				<Checkpoint ReferenceId="ALT_SEL_CHECK">
+					<ForceCamera name="AutoPilot"/>
+				</Checkpoint>
+				<Checkpoint ReferenceId="ALTIMETERS_SETTING_AS_REQUIRED">
+					<ForceCamera name="AutoPilot"/>
+				</Checkpoint>
+				<Checkpoint ReferenceId="Autopilot_CHECK"/>
+				<!--			<Checkpoint ReferenceId="TRQ_ADJUSTMENT_ITT_NG_CHECK"/>-->
+				<!--			<Checkpoint ReferenceId="EIS_CHECK"/>-->
+				<!--			<Checkpoint ReferenceId="CAS_CHECK"/>-->
+				<!--			<Checkpoint ReferenceId="WX_RADAR_AS_REQUIRED"/>-->
+				<!--<Checkpoint ReferenceId="TBM_PRESSURIZATION_CHECK"/>-->
+				<Checkpoint ReferenceId="FUEL_ON_BOARD_CHECK">
+					<CheckpointDesc SubjectTT="TT:GAME.CHECKLIST_FUEL_GAGES" ExpectationTT="TT:GAME.CHECKLIST_CHECK"/>
+				</Checkpoint>
+				<!--	<Checkpoint ReferenceId="AMPS_VOLTS_CHECK"/> -->
+				<Checkpoint ReferenceId="TBM_DE_ICE_SYSTEM_AS_REQUIRED"/>
+				<Checkpoint ReferenceId="TBM_INERT_SEP_AS_REQUIRED"/>
+				<Checkpoint ReferenceId="TBM_Landing_Light_As_Required">
+					<CheckpointDesc SubjectTT="TT:GAME.CHECKLIST_LANDING_LIGHTS" ExpectationTT="TT:GAME.CHECKLIST_AS_REQUIRED"/> <!-- Add an 's' -->
+				</Checkpoint>
+			</Page>
+		</Step>
+
+		<Step ChecklistStepId="FLIGHT_CRUISE">
+			<!--CRUISE  -->
+			<Page SubjectTT="TT:GAME.CHECKLIST_CRUISE">
+				<Checkpoint ReferenceId="ALTIMETERS_SETTING_CHECK">
+					<ForceCamera name="AutoPilot"/>
+				</Checkpoint>
+				<Checkpoint ReferenceId="Autopilot_CHECK"/>
+				<!--			<Checkpoint ReferenceId="TRQ_ADJUSTMENT_ITT_NG_CHECK"/>-->
+				<!--			<Checkpoint ReferenceId="EIS_CHECK"/>-->
+				<!--			<Checkpoint ReferenceId="CAS_CHECK"/>-->
+				<!--		<Checkpoint ReferenceId="TBM_PRESSURIZATION_CHECK"/>-->
+				<Checkpoint ReferenceId="FUEL_ON_BOARD_CHECK">
+					<CheckpointDesc SubjectTT="TT:GAME.CHECKLIST_FUEL_GAGES" ExpectationTT="TT:GAME.CHECKLIST_CHECK"/>
+				</Checkpoint>
+				<!--			<Checkpoint ReferenceId="AMPS_VOLTS_CHECK"/> -->
+				<Checkpoint ReferenceId="TBM_DE_ICE_SYSTEM_AS_REQUIRED"/>
+				<Checkpoint ReferenceId="TBM_INERT_SEP_AS_REQUIRED"/>
+				<Checkpoint ReferenceId="TBM_Landing_Light_Off">
+					<CheckpointDesc SubjectTT="TT:GAME.CHECKLIST_LANDING_LIGHTS" ExpectationTT="TT:GAME.CHECKLIST_OFF"/> <!-- Add an 's' -->
+				</Checkpoint>
+				<!--			<Checkpoint ReferenceId="TOP_OF_DESCENT_COMPUTED"/>-->
+			</Page>
+		</Step>
+
+		<Step ChecklistStepId="FLIGHT_DESCENT">
+			<!--BEFORE DESCENT  -->
+			<Page SubjectTT="TT:GAME.CHECKLIST_BEFORE_DESCENT">
+				<!--			<Checkpoint ReferenceId="BRIEFING_BEFORE_APPROACH_COMPLETED"/>-->
+				<Checkpoint ReferenceId="ALTIMETERS_SETTING_CHECK">
+					<ForceCamera name="AutoPilot"/>
+				</Checkpoint>
+				<!--			<Checkpoint ReferenceId="TBM_PRESSURIZATION_CHECK"/> -->
+				<!--			<Checkpoint ReferenceId="LFE_CHECK"/>-->
+				<Checkpoint ReferenceId="FUEL_ON_BOARD_CHECK">
+					<CheckpointDesc SubjectTT="TT:GAME.CHECKLIST_FUEL_GAGES" ExpectationTT="TT:GAME.CHECKLIST_CHECK"/>
+				</Checkpoint>
+				<!--			<Checkpoint ReferenceId="AMPS_VOLTS_CHECK"/>-->
+				<Checkpoint ReferenceId="TBM_DE_ICE_SYSTEM_AS_REQUIRED"/>
+				<Checkpoint ReferenceId="TBM_INERT_SEP_AS_REQUIRED"/>
+			</Page>
+		</Step>
+
+		<Step ChecklistStepId="LANDING_APPROACH">
+			<!--APPROACH  -->
+			<Page SubjectTT="TT:GAME.CHECKLIST_APPROACH">
+				<Checkpoint ReferenceId="ALTIMETERS_SETTING_CHECK">
+					<CheckpointDesc SubjectTT="TT:GAME.CHECKLIST_ALTIMETERS_SETTING_QNH" ExpectationTT="TT:GAME.CHECKLIST_SET_CHECK"/>
+					<Clue name="TT:CLUE.ALTIMETERS_SETTING_QNH"/>
+					
+					<ForceCamera name="AutoPilot"/>
+				</Checkpoint>
+				<!--			<Checkpoint ReferenceId="MINIMUMS_SET_CHECK"/>-->
+				<!--			<Checkpoint ReferenceId="COM_NAV_GPS_SET_CHECK"/>-->
+				<!--<Checkpoint ReferenceId="TBM_PRESSURIZATION_CHECK"/>-->
+				<!--			<Checkpoint ReferenceId="LFE_CHECK"/>-->
+				<Checkpoint ReferenceId="FUEL_ON_BOARD_CHECK">
+					<CheckpointDesc SubjectTT="TT:GAME.CHECKLIST_FUEL_GAGES" ExpectationTT="TT:GAME.CHECKLIST_CHECK"/>
+				</Checkpoint>
+				<!--			<Checkpoint ReferenceId="AMPS_VOLTS_CHECK"/>-->
+				<Checkpoint ReferenceId="TBM_DE_ICE_SYSTEM_AS_REQUIRED"/>
+				<Checkpoint ReferenceId="TBM_INERT_SEP_ON"/>
+				<Checkpoint ReferenceId="TBM_Landing_Light_As_Required">
+					<CheckpointDesc SubjectTT="TT:GAME.CHECKLIST_LDG_LIGHTS_BELOW_FL_100" ExpectationTT="TT:GAME.CHECKLIST_ON"/>
+				</Checkpoint>      
+			</Page>
+
+
+			<!--SHORT FINAL (~ 500 ft)  -->
+			<Page SubjectTT="TT:GAME.CHECKLIST_SHORT_FINAL">
+				<Checkpoint ReferenceId="Landing_Gear_Down">
+					<CheckpointDesc SubjectTT="TT:GAME.CHECKLIST_LANDING_GEAR_DOWN" ExpectationTT="TT:GAME.CHECKLIST_CHECK"/>
+				</Checkpoint>
+				<Checkpoint ReferenceId="FLAPS_LDG"/>
+				<Checkpoint ReferenceId="AP_YD_DISCONNECT"/>
+			</Page>
+		</Step>
+
+		<Step ChecklistStepId="LANDING_TOUCHDOWN">
+		</Step>
+
+		<Step ChecklistStepId="LANDING_GROUNDROLL">
+		</Step>
+
+		<Step ChecklistStepId="LANDING_TAXI_IN">
+			<!--RUNWAY CLEAR  -->
+			<Page SubjectTT="TT:GAME.CHECKLIST_RUNWAY_CLEAR">
+				<Checkpoint ReferenceId="TBM_Taxi_Lights_On">
+					<CheckpointDesc SubjectTT="TT:GAME.CHECKLIST_TAXI_LIGHTS" ExpectationTT="TT:GAME.CHECKLIST_ON"/> <!-- Add an 's' -->
+				</Checkpoint>
+				<Checkpoint ReferenceId="Navigation_Lights_Off"/>
+				<Checkpoint ReferenceId="Strobe_Lights_Off">
+					<CheckpointDesc SubjectTT="TT:GAME.CHECKLIST_STROBES" ExpectationTT="TT:GAME.CHECKLIST_OFF"/> <!-- Add an 's' -->
+				</Checkpoint>
+				<Checkpoint ReferenceId="TBM_DE_ICE_SYSTEM_AS_REQUIRED"/>
+				<Checkpoint ReferenceId="TRIMS_TO">
+					<CheckpointDesc SubjectTT="TT:GAME.CHECKLIST_TRIMS" ExpectationTT="TT:GAME.CHECKLIST_RESET_TO_TO"/>
+				</Checkpoint>
+				<Checkpoint ReferenceId="Flaps_0">
+					<CheckpointDesc SubjectTT="TT:GAME.CHECKLIST_FLAPS" ExpectationTT="TT:GAME.CHECKLIST_UP"/>
+				</Checkpoint>
+				<!--			<Checkpoint ReferenceId="A_C_AS_REQUIRED"/>-->
+				<!--			<Checkpoint ReferenceId="XPDR_GND_CHECK"/>-->
+				<!--			<Checkpoint ReferenceId="WX_RADAR_CHECK"/>-->
+			</Page>
+		</Step>
+
+		<Step ChecklistStepId="LANDING_GATE">
+			<!--SHUT-DOWN  -->
+			<Page SubjectTT="TT:GAME.CHECKLIST_SHUTDOWN_1_2">
+				<Checkpoint ReferenceId="Parking_Brake_Set">
+					<CheckpointDesc SubjectTT="TT:GAME.CHECKLIST_PARK_BRAKE" ExpectationTT="TT:GAME.CHECKLIST_SET_ON"/>
+				</Checkpoint>
+				<Checkpoint ReferenceId="TBM_EXT_LIGHTS_OFF"/>
+				<Checkpoint ReferenceId="TBM_INT_LIGHTS_AS_REQUIRED"/>
+				<!--			<Checkpoint ReferenceId="OXYGEN_OFF"/>-->
+				<Checkpoint ReferenceId="TBM_FUEL_SEL_MAN"/>
+				<Checkpoint ReferenceId="TBM_AP_TRIMS_OFF"/>
+				<!--			<Checkpoint ReferenceId="A_C_OFF"/>-->
+				<Checkpoint ReferenceId="BLEED_OFF"/>
+				<Checkpoint ReferenceId="TBM_THROTTLE_FLIGHT_IDLE_FOR_2_MIN"/>
+				<Checkpoint ReferenceId="TBM_THROTTLE_LO_IDLE_FOR_15_SEC"/>
+				<Checkpoint ReferenceId="TBM_THROTTLE_CUT_OFF"/>
+				<Checkpoint ReferenceId="TBM_INERT_SEP_OFF"/>
+				<!--			<Checkpoint ReferenceId="CAS_MSG_AUX_BOOST_PMP_ON"/>-->
+				<Checkpoint ReferenceId="TBM_AUX_BP_OFF"/>
+				<Checkpoint ReferenceId="GENERATOR_OFF"/>
+				<Checkpoint ReferenceId="TBM_SOURCE_IF_INERT_SEP_RETRACTED_OFF"/>
+				<Checkpoint ReferenceId="TBM_CRASH_LEVER_DOWN"/>
+				<!--			<Checkpoint ReferenceId="STAND_BY_INSTRUMENTS_OFF"/>-->
+			</Page>
+		</Step>
+		
+	</Checklist.Checklist>
+</SimBase.Document>

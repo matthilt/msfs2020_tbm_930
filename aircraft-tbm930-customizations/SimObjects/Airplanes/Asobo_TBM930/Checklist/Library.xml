@@ -1,0 +1,1407 @@
+<?xml version="1.0" encoding="Windows-1252"?>
+<SimBase.Document Type="CheckpointLibrary" version="1,0">
+	<Checklist.CheckpointLibrary>
+
+    <Checkpoint Id="TBM_FUEL_ON_BOARD_CHECK">
+		<Clue name="TT:CLUE.FUEL_ON_BOARD_CHECK"/>
+		<CheckpointDesc SubjectTT="TT:GAME.CHECKLIST_FUEL_ON_BOARD" ExpectationTT="TT:GAME.CHECKLIST_CHECK"/>
+		<Test>
+			<TestValue>
+				<Operator OpType="AND">
+					<Operator OpType="GREATER">
+						<Val SimVarName="FUEL TOTAL QUANTITY" Units="gallons"/>
+						<Val Code="(A:GPS FLIGHTPLAN TOTAL DISTANCE, km) (A:ESTIMATED CRUISE SPEED, kilometers per hour) / (A:ESTIMATED FUEL FLOW, pounds per hour) 0.162 * *"/>
+					</Operator>
+					<Operator OpType="GREATER">
+						<Val Code="(L:AS3000_MFD_State)"/>
+						<Val Value="1"/>
+					</Operator>
+				</Operator>
+			</TestValue>
+			<Action Copilot="True" Condition="TestValueFalse" Once="true" SpecialAction="WaitUntilTestValueValidated"/>
+      <Action Copilot="True" Condition="TestValueFalse" Once="true" Code="(&gt;H:AS3000_MFD_SOFTKEYS_12)"/>
+		</Test>
+		<Instrument Id="HTML:G1000_MFD:Piston_FuelGaugeLeft"/>
+		<Instrument Id="HTML:G1000_MFD:Piston_FuelGaugeRight"/>
+		<Instrument Id="HTML:G1000_MFD:Piston_FuelGauge"/>
+		<Instrument Id="HTML:AS3000_MFD:Turbo_FuelGaugeLeft"/>
+		<Instrument Id="HTML:AS3000_MFD:Turbo_FuelGaugeRight"/>
+		<Instrument Id="HTML:AS1000_MFD:Piston_FuelGaugeLeft"/>
+		<Instrument Id="HTML:AS1000_MFD:Piston_FuelGaugeRight"/>
+		<Instrument Id="HTML:AS1000_MFD:Piston_FuelGauge"/>
+		<Instrument Id="HTML:AS3000_MFD:Turbo_FuelGauge"/>
+		<Instrument Id="HTML:G3000_MFD:Turbo_FuelGauge"/>
+    </Checkpoint>
+    
+    
+    <!-- Comment communications -->
+
+		<Checkpoint Id="TBM_Taxi_Lights_On">
+		<Clue name="TT:CLUE.TBM_TAXI_LIGHTS_ON"/>
+			<CheckpointDesc SubjectTT="TT:GAME.CHECKLIST_TAXI_LIGHTS" ExpectationTT="TT:GAME.CHECKLIST_ON"/>
+			<Sequence SeqType="Ordered">
+				<Test>
+					<TestValue>
+						<Val SimVarName="ELECTRICAL MASTER BATTERY" Units="Boolean"/>
+					</TestValue>
+					<Action Copilot="True" Condition="TestValueFalse" Once="true" EventID="TOGGLE_MASTER_BATTERY"/>
+				</Test>
+				<Sequence SeqType="Parallel">
+					<Test>
+						<TestValue>
+							<Operator OpType="AND">
+								<Val SimVarName="LIGHT TAXI" Units="Boolean"/>
+								<Val SimVarName="LIGHT TAXI ON" Units="Boolean"/>
+							</Operator>
+						</TestValue>
+						<Instrument id="EXTERIOR_LIGHTS_Switch_Taxi"/>
+						<Action Copilot="True" Condition="TestValueFalse" Once="true" Code="1 (&gt;L:XMLVAR_LANDING_TAXI_OFF_Switch_Position) (&gt;K:TOGGLE_TAXI_LIGHTS)"/>
+					</Test>
+					<Test>
+						<TestValue>
+							<Operator OpType="NOT">
+								<Operator OpType="AND">
+									<Val SimVarName="LIGHT LANDING" Units="Boolean"/>
+									<Val SimVarName="LIGHT LANDING ON" Units="Boolean"/>
+								</Operator>
+							</Operator>
+						</TestValue>
+						<Instrument id="EXTERIOR_LIGHTS_Switch_Taxi"/>
+						<Action Copilot="True" Condition="TestValueFalse" Once="true" EventID="LANDING_LIGHTS_TOGGLE"/>
+					</Test>
+				</Sequence>
+			</Sequence>
+		</Checkpoint>
+
+		<Checkpoint Id="TBM_Landing_Light_On">
+		<Clue name="TT:CLUE.LANDING_LIGHTS_ON"/>
+			<CheckpointDesc SubjectTT="TT:GAME.CHECKLIST_LANDING_LIGHT" ExpectationTT="TT:GAME.CHECKLIST_ON"/>
+			<Sequence SeqType="Ordered">
+				<Test>
+					<TestValue>
+						<Val SimVarName="ELECTRICAL MASTER BATTERY" Units="Boolean"/>
+					</TestValue>
+					<Action Copilot="True" Condition="TestValueFalse" Once="true" EventID="TOGGLE_MASTER_BATTERY"/>
+				</Test>
+				<Test>
+					<TestValue>
+						<Operator OpType="AND">
+							<Val SimVarName="LIGHT LANDING" Units="Boolean"/>
+							<Val SimVarName="LIGHT LANDING ON" Units="Boolean"/>
+						</Operator>
+					</TestValue>
+					<Instrument id="EXTERIOR_LIGHTS_Switch_Taxi"/>
+					<Action Copilot="True" Condition="TestValueFalse" Once="true" Code="0 (&gt;L:XMLVAR_LANDING_TAXI_OFF_Switch_Position) (&gt;K:LANDING_LIGHTS_TOGGLE)"/>
+				</Test>
+			</Sequence>
+		</Checkpoint>
+
+		<Checkpoint Id="TBM_Landing_Light_Off">
+		<Clue name="TT:CLUE.LANDING_LIGHTS_OFF"/>
+			<CheckpointDesc SubjectTT="TT:GAME.CHECKLIST_LANDING_LIGHT" ExpectationTT="TT:GAME.CHECKLIST_OFF"/>
+			<Sequence SeqType="Parallel">
+				<Test>
+					<TestValue>
+						<Operator OpType="NOT">
+							<Val SimVarName="LIGHT LANDING" Units="Boolean"/>
+						</Operator>
+					</TestValue>
+					<Instrument id="EXTERIOR_LIGHTS_Switch_Taxi"/>
+					<Action Copilot="True" Condition="TestValueFalse" Once="true" Code="2 (&gt;L:XMLVAR_LANDING_TAXI_OFF_Switch_Position) (&gt;K:LANDING_LIGHTS_TOGGLE)"/>
+				</Test>
+				<Test>
+					<TestValue>
+						<Operator OpType="NOT">
+							<Val SimVarName="LIGHT TAXI" Units="Boolean"/>
+						</Operator>
+					</TestValue>
+					<Instrument id="EXTERIOR_LIGHTS_Switch_Taxi"/>
+					<Action Copilot="True" Condition="TestValueFalse" Once="true" Code="2 (&gt;L:XMLVAR_LANDING_TAXI_OFF_Switch_Position) (&gt;K:TOGGLE_TAXI_LIGHTS)"/>
+				</Test>
+			</Sequence>
+		</Checkpoint>
+
+
+		<Checkpoint Id="TBM_Landing_Light_As_Required">
+		<Clue name="TT:CLUE.LANDING_LIGHT_AS_REQUIRED"/>
+			<CheckpointDesc SubjectTT="TT:GAME.CHECKLIST_LANDING_LIGHT" ExpectationTT="TT:GAME.CHECKLIST_AS_REQUIRED"/>
+			<Sequence SeqType="Parallel">
+				<Test>
+					<TestValue>
+						<Operator OpType="EQUAL">
+							<Operator OpType="LESS">
+								<Val SimVarName="PLANE ALT ABOVE GROUND" Units="feet"/>
+								<Val Value="10000"/>
+							</Operator>
+							<Val SimVarName="LIGHT LANDING" Units="Boolean"/>
+						</Operator>
+					</TestValue>
+					<Instrument id="EXTERIOR_LIGHTS_Switch_Taxi"/>
+					<Action Copilot="True" Condition="TestValueFalse" Once="true" Code="0 2 (A:PLANE ALT ABOVE GROUND, feet) 10000 &lt; ? (&gt;L:XMLVAR_LANDING_TAXI_OFF_Switch_Position) (&gt;K:LANDING_LIGHTS_TOGGLE)"/>
+				</Test>
+				<Test>
+					<TestValue>
+						<Operator OpType="NOT">
+							<Val SimVarName="LIGHT TAXI" Units="Boolean"/>
+						</Operator>
+					</TestValue>
+					<Action Copilot="True" Condition="TestValueFalse" Once="true" EventID="TOGGLE_TAXI_LIGHTS"/>
+				</Test>
+			</Sequence>
+		</Checkpoint>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+		<Checkpoint Id="TBM_EXT_LIGHTS_OFF">
+		<Clue name="TT:CLUE.TBM_EXT_LIGHTS_OFF"/>
+			<CheckpointDesc SubjectTT="TT:GAME.CHECKLIST_EXT_LIGHTS" ExpectationTT="TT:GAME.CHECKLIST_OFF"/>
+			<Sequence SeqType="Unordered">
+				<Test>
+					<TestValue>
+						<Operator OpType="NOT">
+							<Val SimVarName="LIGHT LOGO" Units="Bool"/>
+						</Operator>
+					</TestValue> 
+					<Instrument id="EXTERIOR_LIGHTS_Push_Pulse"/>
+					<Action Copilot="True" Condition="TestValueFalse" Once="false" EventID="TOGGLE_LOGO_LIGHTS"/>
+				</Test>
+				<Test>
+					<TestValue>
+						<Operator OpType="NOT">
+							<Val SimVarName="LIGHT TAXI" Units="Boolean"/>
+						</Operator>
+					</TestValue>
+					<Instrument id="EXTERIOR_LIGHTS_Switch_Taxi"/>
+					<Action Copilot="True" Condition="TestValueFalse" Once="true" EventID="TOGGLE_TAXI_LIGHTS"/>
+				</Test>
+				<Test>
+					<TestValue>
+						<Operator OpType="NOT">
+							<Val SimVarName="LIGHT LANDING" Units="Boolean"/>
+						</Operator>
+					</TestValue>
+					<Instrument id="EXTERIOR_LIGHTS_Switch_Taxi"/>
+					<Action Copilot="True" Condition="TestValueFalse" Once="true" EventID="LANDING_LIGHTS_TOGGLE"/>
+				</Test>
+				<Test>
+					<TestValue>
+						<Operator OpType="NOT">
+							<Val SimVarName="LIGHT NAV" Units="Boolean"/>
+						</Operator>
+					</TestValue>
+					<Instrument id="LIGHTING_Switch_Light_Navigation"/>
+					<Action Copilot="True" Condition="TestValueFalse" Once="true" EventID="TOGGLE_NAV_LIGHTS"/>
+				</Test>
+				<CheckpointDesc SubjectTT="TT:GAME.CHECKLIST_BEACON" ExpectationTT="TT:GAME.CHECKLIST_OFF"/>
+				<Test>
+					<TestValue>
+						<Operator OpType="NOT">
+							<Val SimVarName="LIGHT STROBE" Units="Boolean"/>
+						</Operator>
+					</TestValue>
+					<Action Copilot="True" Condition="TestValueFalse" Once="true" EventID="STROBES_TOGGLE"/>
+					<Instrument id="LIGHTING_Switch_Light_Strobe"/>
+				</Test>
+			</Sequence>
+		</Checkpoint>
+
+		<Checkpoint Id="TBM_INT_LIGHTS_OFF">
+		<Clue name="TT:CLUE.TBM_INT_LIGHTS_OFF"/>
+			<CheckpointDesc SubjectTT="TT:GAME.CHECKLIST_INT_LIGHTS" ExpectationTT="TT:GAME.CHECKLIST_OFF"/>
+			<Sequence SeqType="Unordered">
+				<Test>
+					<Instrument id="INTERIOR_LIGHTS_Knob_Panel"/>
+					<TestValue>
+						<Operator OpType="NOT">
+							<Val Code="(L:XMLVAR_LightDimmer)"/>
+						</Operator>
+					</TestValue> 
+					<Instrument id="LIGHTING_Switch_Dimmer"/>
+					<Action Copilot="True" Condition="TestValueFalse" Once="false" Code="0 (&gt;L:XMLVAR_LightDimmer)"/>
+				</Test>
+				<Test>
+					<TestValue>
+						<Operator OpType="NOT">
+							<Val Code="(L:XMLVAR_CabinLightOn)"/>
+						</Operator>
+					</TestValue>
+					<Action Copilot="True" Condition="TestValueFalse" Once="false" Code="0 (&gt;L:XMLVAR_CabinLightOn)"/>
+					<Instrument id="LIGHTING_Switch_Cabin"/>
+				</Test>
+				<Test>
+					<TestValue>
+						<Operator OpType="NOT">
+							<Val Code="(L:XMLVAR_AccessLightOn)"/>
+						</Operator>
+					</TestValue> 
+					<Instrument id="LIGHTING_Switch_Access"/>
+					<Action Copilot="True" Condition="TestValueFalse" Once="false" Code="0 (&gt;L:XMLVAR_AccessLightOn)"/>
+				</Test>
+			</Sequence>
+		</Checkpoint>
+
+		<Checkpoint Id="TBM_INT_LIGHTS_AS_REQUIRED">
+		<Clue name="TT:CLUE.TBM_INT_LIGHTS_AS_REQUIRED"/>
+			<CheckpointDesc SubjectTT="TT:GAME.CHECKLIST_INT_LIGHTS" ExpectationTT="TT:GAME.CHECKLIST_AS_REQUIRED"/>
+			<Sequence SeqType="Unordered">
+				<Test>
+					<Instrument id="INTERIOR_LIGHTS_Knob_Panel"/>
+					<!-- here we sum booleans : 2 means Day and light off; 1 means day XOR light off; 0 means not day and light on. We then return 1 if sum is different from 1-->
+					<TestValue>
+						<Val Code="(E:TIME OF DAY, enum) 1 == (L:XMLVAR_LightDimmer) + 1 !="/>
+					</TestValue> 
+					<Instrument id="LIGHTING_Switch_Dimmer"/>
+					<Action Copilot="True" Condition="TestValueFalse" Once="false" Code="(L:XMLVAR_LightDimmer) ! (&gt;L:XMLVAR_LightDimmer)"/>
+				</Test>
+				<Test>
+					<!-- here we sum booleans : 2 means Day and light off; 1 means day XOR light off; 0 means not day and light on. We then return 1 if sum is different from 1-->
+					<TestValue>
+						<Val Code="(E:TIME OF DAY, enum) 1 == (L:XMLVAR_CabinLightOn) + 1 !="/>
+					</TestValue> 
+					<Action Copilot="True" Condition="TestValueFalse" Once="false" Code="(L:XMLVAR_CabinLightOn) ! (&gt;L:XMLVAR_CabinLightOn)"/>
+					<Instrument id="LIGHTING_Switch_Cabin"/>
+				</Test>
+				<Test>
+					<!-- here we sum booleans : 2 means Day and light off; 1 means day XOR light off; 0 means not day and light on. We then return 1 if sum is different from 1-->
+					<TestValue>
+						<Val Code="(E:TIME OF DAY, enum) 1 == (L:XMLVAR_AccessLightOn) + 1 !="/>
+					</TestValue> 
+					<Instrument id="LIGHTING_Switch_Access"/>
+					<Action Copilot="True" Condition="TestValueFalse" Once="false" Code="(L:XMLVAR_AccessLightOn) ! (&gt;L:XMLVAR_AccessLightOn)"/>
+				</Test>
+			</Sequence>
+		</Checkpoint>
+
+		<Checkpoint Id="TBM_IGNITION_AUTO">
+		<Clue name="TT:CLUE.TBM_IGNITION_AUTO"/>
+			<CheckpointDesc SubjectTT="TT:GAME.CHECKLIST_IGNITION" ExpectationTT="TT:GAME.CHECKLIST_AUTO"/>
+			<Test>
+				<TestValue>
+					<Operator optype ="EQUAL">
+						<Val SimVarName="TURB ENG IGNITION SWITCH EX1:1" Units="Enum"/>
+						<Val Value="1"/>
+					</Operator>
+				</TestValue>
+				<Action Copilot="True" Condition="TestValueFalse" Once="false" EventID="TURBINE_IGNITION_SWITCH_SET1" EventParam="1"/>
+				<Instrument id="ENGINE_Switch_Ignition"/>
+			</Test>
+		</Checkpoint>
+
+		<Checkpoint Id="TBM_IGNITION_OFF">
+		<Clue name="TT:CLUE.TBM_IGNITION_OFF"/>
+			<CheckpointDesc SubjectTT="TT:GAME.CHECKLIST_IGNITION" ExpectationTT="TT:GAME.CHECKLIST_OFF"/>
+			<Test>
+				<TestValue>
+					<Operator optype ="EQUAL">
+						<Val SimVarName="TURB ENG IGNITION SWITCH EX1:1" Units="Enum"/>
+						<Val Value="0"/>
+					</Operator>
+				</TestValue>
+				<Action Copilot="True" Condition="TestValueFalse" Once="false" EventID="TURBINE_IGNITION_SWITCH_SET1" EventParam="0"/>
+				<Instrument id="ENGINE_Switch_Ignition"/>
+			</Test>
+		</Checkpoint>
+
+		<Checkpoint Id="IGNITION_AUTO_OR_ON_AS_REQUIRED">
+		<Clue name="TT:CLUE.IGNITION_AUTO_OR_ON_AS_REQUIRED"/>
+			<CheckpointDesc SubjectTT="TT:GAME.CHECKLIST_IGNITION_AUTO_OR_ON" ExpectationTT="TT:GAME.CHECKLIST_AS_REQUIRED"/>
+			<Test>
+				<TestValue>
+					<Operator optype ="OR">
+						<Operator optype ="EQUAL">
+							<Val SimVarName="TURB ENG IGNITION SWITCH EX1:1" Units="Enum"/>
+							<Val Value="1"/>
+						</Operator>
+						<Operator optype ="EQUAL">
+							<Val SimVarName="TURB ENG IGNITION SWITCH EX1:1" Units="Enum"/>
+							<Val Value="2"/>
+						</Operator>
+					</Operator>
+				</TestValue>
+				<Action Copilot="True" Condition="TestValueFalse" Once="false" EventID="TURBINE_IGNITION_SWITCH_SET1" EventParam="1"/>
+				<Instrument id="ENGINE_Switch_Ignition"/>
+			</Test>
+		</Checkpoint>
+
+		<Checkpoint Id="TBM_SOURCE_BATT_OR_GPU">
+		<Clue name="TT:CLUE.TBM_SOURCE_BATT_OR_GPU"/>
+			<CheckpointDesc SubjectTT="TT:GAME.CHECKLIST_SOURCE" ExpectationTT="TT:GAME.CHECKLIST_BATT_OR_GPU"/>
+			<Sequence SeqType="Ordered">
+				<Test>
+					<TestValue>
+						<Val SimVarName="ELECTRICAL MASTER BATTERY" Units="boolean"/>
+					</TestValue>
+					<Action Copilot="True" Condition="TestValueFalse" Once="true" EventID="TOGGLE_MASTER_BATTERY"/>
+				</Test>
+				<Test>
+					<TestValue>
+						<Operator OpType="LESS">
+							<Val Code="(L:XMLVAR_ElecSource)"/>
+							<Val Value="2"/>
+						</Operator>
+					</TestValue> 
+					<Instrument id="ELECTRICAL_Switch_Source"/>
+					<Action Copilot="True" Condition="TestValueFalse" Once="false" Code="1 (&gt;L:XMLVAR_ElecSource)"/>
+				</Test>
+			</Sequence>
+		</Checkpoint>
+
+		<Checkpoint Id="TBM_SOURCE_BATT">
+		<Clue name="TT:CLUE.TBM_SOURCE_BATT"/>
+			<CheckpointDesc SubjectTT="TT:GAME.CHECKLIST_SOURCE" ExpectationTT="TT:GAME.CHECKLIST_BATT"/>
+			<Sequence SeqType="Ordered">
+				<Test>
+					<TestValue>
+						<Val SimVarName="ELECTRICAL MASTER BATTERY" Units="boolean"/>
+					</TestValue>
+					<Action Copilot="True" Condition="TestValueFalse" Once="true" EventID="TOGGLE_MASTER_BATTERY"/>
+				</Test>
+				<Test>
+					<TestValue>
+						<Operator OpType="EQUAL">
+							<Val Code="(L:XMLVAR_ElecSource)"/>
+							<Val Value="1"/>
+						</Operator>
+					</TestValue> 
+					<Instrument id="ELECTRICAL_Switch_Source"/>
+					<Action Copilot="True" Condition="TestValueFalse" Once="false" Code="1 (&gt;L:XMLVAR_ElecSource)"/>
+				</Test>
+			</Sequence>
+		</Checkpoint>
+
+
+		<Checkpoint Id="TBM_SOURCE_IF_INERT_SEP_RETRACTED_OFF">
+			<Clue name="TT:CLUE.TBM_SOURCE_IF_INERT_SEP_RETRACTED_OFF"/>
+			<Feedback name="TT:FEEDBACK.TBM_SOURCE_IF_INERT_SEP_RETRACTED_OFF" DurationTimer="True" />
+			<CheckpointDesc SubjectTT="TT:GAME.CHECKLIST_SOURCE_IF_INERT_SEP_RETRACTED" ExpectationTT="TT:GAME.CHECKLIST_OFF"/>
+			<Sequence SeqType="Ordered">
+				<Test>
+					<Instrument id="DEICE_Switch_InertSep"/>
+					<TestValue>
+						<Operator OpType="NOT">
+							<Val SimVarName="ENG ANTI ICE:1" Units="boolean"/>
+						</Operator>
+					</TestValue>
+					<Action Copilot="True" Condition="TestValueFalse" Once="true" EventID="ANTI_ICE_TOGGLE_ENG1"/>
+				</Test>
+				<Test>
+					<TestValue>
+						<Operator OpType="EQUAL">
+							<Val Code="(L:XMLVAR_InertSep_Deployment)"/>
+							<Val Value="0"/>
+						</Operator>
+					</TestValue>
+					<Action Copilot="True" Condition="TestValueFalse" SpecialAction="WaitForUserToDoIt"/>
+				</Test>
+				<Test>
+					<TestValue>
+						<Operator OpType="NOT">
+							<Val SimVarName="ELECTRICAL MASTER BATTERY" Units="boolean"/>
+						</Operator>
+					</TestValue>
+					<Action Copilot="True" Condition="TestValueFalse" Once="true" EventID="TOGGLE_MASTER_BATTERY"/>
+				</Test>
+				<Test>
+					<TestValue>
+						<Operator OpType="EQUAL">
+							<Val Code="(L:XMLVAR_ElecSource)"/>
+							<Val Value="2"/>
+						</Operator>
+					</TestValue>
+					<Instrument id="ELECTRICAL_Switch_Source"/>
+					<Action Copilot="True" Condition="TestValueFalse" Once="false" Code="2 (&gt;L:XMLVAR_ElecSource)"/>
+				</Test>
+			</Sequence>
+		</Checkpoint>
+
+
+		<Checkpoint Id="TBM_GENERATOR_MAIN">
+		<Clue name="TT:CLUE.TBM_GENERATOR_MAIN"/>
+			<CheckpointDesc SubjectTT="TT:GAME.CHECKLIST_GENERATOR" ExpectationTT="TT:GAME.CHECKLIST_MAIN"/>
+			<Sequence SeqType="Ordered">
+				<Test>
+					<TestValue>
+						<Val SimVarName="GENERAL ENG GENERATOR SWITCH:1" Units="boolean"/>
+					</TestValue>
+					<Action Copilot="True" Condition="TestValueFalse" Once="true" EventID="TOGGLE_MASTER_ALTERNATOR"/>
+				</Test>
+				<Test>
+					<TestValue>
+						<Operator OpType="EQUAL">
+							<Val Code="(L:XMLVAR_ElecGen)"/>
+							<Val Value="1"/>
+						</Operator>
+					</TestValue>
+					<Action Copilot="True" Condition="TestValueFalse" Once="false" Code="1 (&gt;L:XMLVAR_ElecGen)"/>
+					<Instrument id="ELECTRICAL_Switch_Generator"/>
+				</Test>
+			</Sequence>
+		</Checkpoint>
+
+		<Checkpoint Id="TBM_INERT_SEP_OFF">
+		<Clue name="TT:CLUE.TBM_INERT_SEP_OFF"/>
+			<CheckpointDesc SubjectTT="TT:GAME.CHECKLIST_INERT_SEP" ExpectationTT="TT:GAME.CHECKLIST_OFF"/>
+			<Test>
+				<Instrument id="DEICE_Switch_InertSep"/>
+				<TestValue>
+					<Operator OpType="EQUAL">
+						<Val Code="(L:XMLVAR_InertSep1_Switch)"/>
+						<Val Value="0"/>
+					</Operator>
+				</TestValue>
+				<Action Copilot="True" Condition="TestValueFalse" Once="true" Code="0 (&gt;L:XMLVAR_InertSep1_Switch)"/>
+			</Test>
+		</Checkpoint>
+
+		<Checkpoint Id="TBM_INERT_SEP_ON">
+		<Clue name="TT:CLUE.TBM_INERT_SEP_ON"/>
+			<CheckpointDesc SubjectTT="TT:GAME.CHECKLIST_INERT_SEP" ExpectationTT="TT:GAME.CHECKLIST_ON"/>
+      <Test>
+        <Instrument id="DEICE_Switch_InertSep"/>
+        <TestValue>
+          <Operator OpType="EQUAL">
+            <Val Code="(L:XMLVAR_InertSep1_Switch)"/>
+            <Val Value="1"/>
+          </Operator>
+        </TestValue>
+        <Action Copilot="True" Condition="TestValueFalse" Once="true" Code="1 (&gt;L:XMLVAR_InertSep1_Switch)"/>
+      </Test>
+		</Checkpoint>
+
+		<Checkpoint Id="TBM_INERT_SEP_AS_REQUIRED">
+		<Clue name="TT:CLUE.TBM_INERT_SEP_AS_REQUIRED"/>
+			<CheckpointDesc SubjectTT="TT:GAME.CHECKLIST_INERT_SEP" ExpectationTT="TT:GAME.CHECKLIST_AS_REQUIRED"/>
+			<Test>
+				<Instrument id="DEICE_Switch_InertSep"/>			
+				<TestValue>
+					<Operator OpType="EQUAL">
+						<Val SimVarName="ENG ANTI ICE:1" Units="boolean"/>
+						<Val Code="(A:AMBIENT PRECIP STATE, flags) 2 &gt;"/>
+					</Operator>
+				</TestValue>
+				<Action Copilot="True" Condition="TestValueFalse" Once="true" EventID="ANTI_ICE_TOGGLE_ENG1"/>
+			</Test>
+		</Checkpoint>
+
+		<Checkpoint Id="TBM_AUX_BP_ON">
+		<Clue name="TT:CLUE.TBM_AUX_BP_ON"/>
+			<CheckpointDesc SubjectTT="TT:GAME.CHECKLIST_AUX_BP" ExpectationTT="TT:GAME.CHECKLIST_ON"/>
+      <Test>
+        <Instrument id="FUEL_Switch_AUXBP"/>
+        <TestValue>
+          <Operator OpType="EQUAL">
+            <Val SimVarName="GENERAL ENG FUEL PUMP SWITCH EX1:1" Units="enum"/>
+            <Val Value="1"/>
+          </Operator>
+        </TestValue>
+        <Action Copilot="True" Condition="TestValueFalse" Once="true" EventID="ELECT_FUEL_PUMP1_SET" EventParam="1"/>
+      </Test>
+		</Checkpoint>
+
+		<Checkpoint Id="TBM_AUX_BP_AUTO">
+		<Clue name="TT:CLUE.TBM_AUX_BP_AUTO"/>
+			<CheckpointDesc SubjectTT="TT:GAME.CHECKLIST_AUX_BP" ExpectationTT="TT:GAME.CHECKLIST_AUTO"/>
+				<Test>
+					<Instrument id="FUEL_Switch_AUXBP"/>
+					<TestValue>
+            <Operator OpType="EQUAL">
+             <Val SimVarName="GENERAL ENG FUEL PUMP SWITCH EX1:1" Units="enum"/>
+            <Val Value="2"/>
+            </Operator>
+					</TestValue>
+					<Action Copilot="True" Condition="TestValueFalse" Once="true" EventID="ELECT_FUEL_PUMP1_SET" EventParam="2"/>
+				</Test>
+		</Checkpoint>
+
+		<Checkpoint Id="TBM_AUX_BP_OFF">
+		<Clue name="TT:CLUE.TBM_AUX_BP_OFF"/>
+			<CheckpointDesc SubjectTT="TT:GAME.CHECKLIST_AUX_BP" ExpectationTT="TT:GAME.CHECKLIST_OFF"/>
+      <Test>
+        <Instrument id="FUEL_Switch_AUXBP"/>
+        <TestValue>
+          <Operator OpType="EQUAL">
+            <Val SimVarName="GENERAL ENG FUEL PUMP SWITCH EX1:1" Units="enum"/>
+            <Val Value="0"/>
+          </Operator>
+        </TestValue>
+        <Action Copilot="True" Condition="TestValueFalse" Once="true" EventID="ELECT_FUEL_PUMP1_SET" EventParam="0"/>
+      </Test>
+		</Checkpoint>
+
+		<Checkpoint Id="TBM_STARTER_ON_2_SEC_THEN_OFF">
+		<Clue name="TT:CLUE.TBM_STARTER_ON_2_SEC_THEN_OFF"/>
+			<CheckpointDesc SubjectTT="TT:GAME.CHECKLIST_STARTER" ExpectationTT="TT:GAME.CHECKLIST_ON_2_SEC_THEN_OFF"/>
+			<Sequence SeqType="Ordered">
+				<Test>
+					<Once>True</Once>
+					<TestValue>
+						<Val SimVarName="GENERAL ENG STARTER:1" Units="Boolean"/>
+					</TestValue>
+					<Instrument id="ENGINE_Switch_Starter"/>
+					<Action Copilot="True" Condition="TestValueFalse" Once="true" EventParam="1" EventID="SET_STARTER1_HELD"/>
+					<Action Copilot="True" Condition="TestValueFalse" Once="false" Code="1 (&gt;L:XMLVAR_Starter_IsHeld)"/>
+				</Test>
+				<Test>
+					<Once>TRUE</Once>
+					<TestValue>
+						<Operator OpType="EQUAL">
+							<Val Code="(L:XMLVAR_Starter)"/>
+							<Val Value="0"/>
+						</Operator>
+					</TestValue>
+					<Duration Value="1.9" Cumulative="False"/>
+					<Instrument id="ENGINE_Switch_Starter"/>
+					<Action Copilot="True" Condition="TestValueFalse" Once="false" Code="0 (&gt;L:XMLVAR_Starter)"/>
+				</Test>
+				<Test>
+					<TestValue>
+						<Operator OpType="EQUAL">
+							<Val Code="(L:XMLVAR_Starter)"/>
+							<Val Value="1"/>
+						</Operator>
+					</TestValue>
+					<Action Copilot="True" Condition="TestValueFalse" Once="true" EventParam="0" EventID="SET_STARTER1_HELD"/>
+					<Action Copilot="True" Condition="TestValueFalse" Once="false" Code="0 (&gt;L:XMLVAR_Starter_IsHeld)"/>
+					<Action Copilot="True" Condition="TestValueFalse" Once="false" Code="1 (&gt;L:XMLVAR_Starter)"/>
+					<Instrument id="ENGINE_Switch_Starter"/>
+				</Test>
+			</Sequence>
+		</Checkpoint>
+
+		<Checkpoint Id="TBM_STARTER_ABORT_AFTER_30_SEC_MAX_THEN_OFF">
+		<Clue name="TT:CLUE.TBM_STARTER_ABORT_AFTER_30_SEC_MAX_THEN_OFF"/>
+		<Feedback name="TT:FEEDBACK.TBM_STARTER_ABORT_AFTER_30_SEC_MAX_THEN_OFF" DurationTimer="True" />
+			<CheckpointDesc SubjectTT="TT:GAME.CHECKLIST_STARTER" ExpectationTT="TT:GAME.CHECKLIST_ABORT_AFTER_30_SEC_MAX"/>
+			<Action Condition="INIT" Once="true" StoreVar="30_SEC_TIMER_START">
+				<Val Code="(E:SIMULATION TIME, seconds)"/>
+			</Action>
+			<Sequence SeqType="Ordered">
+				<Test>
+					<Once>TRUE</Once>
+					<TestValue>
+						<Val SimVarName="GENERAL ENG STARTER:1" Units="Boolean"/>
+					</TestValue>
+					<Instrument id="ENGINE_Switch_Starter"/>
+					<Action Copilot="True" Condition="TestValueFalse" Once="true" EventID="TOGGLE_STARTER1"/>
+				</Test>
+				<Test>
+					<Once>TRUE</Once>
+					<TestValue>
+						<Operator OpType="AND">
+							<Operator OpType="NOT">
+								<Val SimVarName="GENERAL ENG STARTER:1" Units="Boolean"/>
+							</Operator>
+							<Operator OpType="GREATER">
+								<Val ReadVar="30_SEC_TIMER_START"/>
+								<Val Code="(E:SIMULATION TIME, seconds) 30 -"/>
+							</Operator>
+						</Operator>
+					</TestValue>
+					<Instrument id="ENGINE_Switch_Starter"/>
+					<Action Copilot="True" Condition="TestValueFalse" Once="true" EventID="TOGGLE_STARTER1"/>
+					<Action Copilot="True" Condition="TestValueFalse" Once="false" Code="2 (&gt;L:XMLVAR_Starter)"/>
+				</Test>
+			</Sequence>
+		</Checkpoint>
+
+		<Checkpoint Id="AUTOMATIC_STARTER_OFF_WHEN_NG_52">
+		<Clue name="TT:CLUE.AUTOMATIC_STARTER_OFF_WHEN_NG_52"/>
+			<CheckpointDesc SubjectTT="TT:GAME.CHECKLIST_AUTOMATIC_STARTER" ExpectationTT="TT:GAME.CHECKLIST_OFF_WHEN_NG_52"/>
+			<Action Condition="Init" InitVar="TimeStartCombustion">
+				<Val Code="(E:SIMULATION TIME, seconds) 0 (&gt;L:TimeN1At30Pct) 0 (&gt;L:TimeN1At50Pct)"/>
+			</Action>
+			<Sequence SeqType="Ordered">
+				<Test>
+					<TestValue>
+						<Operator OpType="GREATER" Tolerance="2">
+							<Val SimVarName="TURB ENG N1:1" Units="Percent"/>
+							<Val Value="52" />
+						</Operator>
+					</TestValue>
+					<Action Copilot="True" Condition="TestValueFalse" Once="false" SpecialAction="WaitUntilTestValueValidated"/>
+					<Instrument id="HTML:AS3000_MFD:Turbo_NgGauge"/>
+					<Instrument id="HTML:G3000_MFD:Turbo_NgGauge"/>
+				</Test>
+				<Test>
+					<TestValue>
+						<Operator OpType="GREATER">
+							<Val ReadVar="TimeStartCombustion"/>
+							<Val Code="(E:SIMULATION TIME, seconds) 60 -"/>
+						</Operator>
+					</TestValue>
+					<Action Copilot="True" Condition="TestValueFalse" Once="false" SpecialAction="WaitUntilTestValueValidated"/>
+				</Test>
+				<Test>
+					<TestValue>
+						<Operator OpType="NOT">
+							<Val SimVarName="GENERAL ENG STARTER:1" Units="Bool"/>
+						</Operator>
+					</TestValue>
+					<Action Copilot="True" Condition="TestValueFalse" Once="true" EventID="TOGGLE_STARTER1"/>
+				</Test>
+			</Sequence>
+		</Checkpoint>
+
+		<Checkpoint Id="TBM_STARTER_OFF">
+		<Clue name="TT:CLUE.TBM_STARTER_OFF"/>
+			<CheckpointDesc SubjectTT="TT:GAME.CHECKLIST_STARTER" ExpectationTT="TT:GAME.CHECKLIST_OFF"/>
+			<Sequence SeqType="Ordered">
+				<Test>
+					<TestValue>
+						<Operator OpType="NOT">
+							<Val SimVarName="GENERAL ENG STARTER:1" Units="boolean"/>
+						</Operator>
+					</TestValue>
+					<Action Copilot="True" Condition="TestValueFalse" Once="true" EventID="TOGGLE_STARTER1" EventParam="1"/>
+					<Instrument id="ENGINE_Switch_Starter"/>
+				</Test>
+				<Test>
+					<TestValue>
+						<Operator OpType="EQUAL">
+							<Val Code="(L:XMLVAR_Starter)"/>
+							<Val Value="1"/>
+						</Operator>
+					</TestValue>
+					<Action Copilot="True" Condition="TestValueFalse" Once="false" Code="1 (&gt;L:XMLVAR_Starter)"/>
+					<Instrument id="ENGINE_Switch_Starter"/>
+				</Test>
+			</Sequence>
+		</Checkpoint>
+
+		<Checkpoint Id="TBM_DE_ICE_SYSTEM_ALL_OFF">
+		<Clue name="TT:CLUE.TBM_DE_ICE_SYSTEM_ALL_OFF"/>
+			<CheckpointDesc SubjectTT="TT:GAME.CHECKLIST_DE_ICE_SYSTEM" ExpectationTT="TT:GAME.CHECKLIST_ALL_OFF"/>
+			<Sequence SeqType="Unordered">
+				<Test>
+					<Instrument id="DEICE_Switch_Airframe"/>
+					<TestValue>
+						<Operator OpType="NOT">
+							<Val SimVarName="STRUCTURAL DEICE SWITCH" Units="Bool"/> 
+						</Operator>
+					</TestValue>
+					<Action Copilot="True" Condition="TestValueFalse" Once="true" EventID="TOGGLE_STRUCTURAL_DEICE"/> 
+				</Test>
+				<Test>
+					<Instrument id="DEICE_Switch_Light"/>
+					<TestValue>
+						<Operator OpType="NOT">
+							<Val SimVarName="LIGHT WING" Units="Bool"/>
+						</Operator>
+					</TestValue>
+					<Action Copilot="True" Condition="TestValueFalse" Once="true" EventID="TOGGLE_WING_LIGHTS"/>
+				</Test>
+				<Test>
+					<Instrument id="DEICE_Switch_Propeller"/>
+					<TestValue>
+						<Operator OpType="NOT">
+							<Val SimVarName="PROP DEICE SWITCH:1" Units="Bool"/>
+						</Operator>
+					</TestValue>
+					<Action Copilot="True" Condition="TestValueFalse" Once="true" EventID="TOGGLE_PROPELLER_DEICE"/>
+				</Test>
+				<Test>
+					<Instrument id="DEICE_Switch_Windshield"/>
+					<TestValue>
+						<Operator OpType="EQUAL">
+							<Val Code="(L:FAKE_SIMVAR_DeiceWindshield)"/>
+							<Val Value="0"/>
+						</Operator>
+					</TestValue>
+					<Action Copilot="True" Condition="TestValueFalse" Once="false" Code="0 (&gt;L:FAKE_SIMVAR_DeiceWindshield)"/>
+				</Test>
+				<Test>
+					<Instrument id="DEICE_Switch_pitot_L"/>
+					<Instrument id="DEICE_Switch_pitot_R"/>
+					<TestValue>
+						<Operator OpType="NOT">
+							<Val SimVarName="PITOT HEAT" Units="Bool"/>
+						</Operator>
+					</TestValue>
+					<Action Copilot="True" Condition="TestValueFalse" Once="true" EventID="PITOT_HEAT_TOGGLE"/>
+				</Test>
+			</Sequence>
+		</Checkpoint>
+
+		<Checkpoint Id="TBM_DE_ICE_SYSTEM_AS_REQUIRED">
+		<Clue name="TT:CLUE.TBM_DE_ICE_SYSTEM_AS_REQUIRED"/>
+			<CheckpointDesc SubjectTT="TT:GAME.CHECKLIST_DE_ICE_SYSTEM" ExpectationTT="TT:GAME.CHECKLIST_AS_REQUIRED"/>
+			<Action Condition="INIT" StoreVar="DE_ICE_SYSTEM_IS_REQUIRED">
+				<Val Code="(A:AMBIENT TEMPERATURE, Celsius) 5 &lt;="/>
+			</Action>
+			<Sequence SeqType="Unordered">
+				<Test>
+					<TestValue>
+						<Operator OpType="EQUAL">
+							<Val Code="(L:XMLVAR_IsDeiceAirFrame)"/>
+							<Val ReadVar="DE_ICE_SYSTEM_IS_REQUIRED"/>
+						</Operator>
+					</TestValue>
+					<Action Copilot="True" Condition="TestValueFalse" Once="false" Code="(L:XMLVAR_IsDeiceAirFrame) ! (&gt;L:XMLVAR_IsDeiceAirFrame)"/>
+					<Instrument id="DEICE_Switch_Airframe"/>
+				</Test>
+				<Test>
+					<TestValue>
+						<Operator OpType="EQUAL">
+							<Val SimVarName="PROP DEICE SWITCH:1" Units="Bool"/>
+							<Val ReadVar="DE_ICE_SYSTEM_IS_REQUIRED"/>
+						</Operator>
+					</TestValue>
+					<Action Copilot="True" Condition="TestValueFalse" Once="true" EventID="TOGGLE_PROPELLER_DEICE"/>
+					<Instrument id="DEICE_Switch_Propeller"/>
+				</Test>
+				<Test>
+					<TestValue>
+						<Operator OpType="EQUAL">
+							<Val Code="(L:XMLVAR_DeiceWindshield_1)"/>
+							<Val ReadVar="DE_ICE_SYSTEM_IS_REQUIRED"/>
+						</Operator>
+					</TestValue>
+					<Action Copilot="True" Condition="TestValueFalse" Once="false" Code="(L:XMLVAR_DeiceWindshield_1) ! (&gt;L:XMLVAR_DeiceWindshield_1)"/>
+					<Instrument id="DEICE_Switch_Windshield"/>
+				</Test>
+			</Sequence>
+		</Checkpoint>
+
+		<Checkpoint Id="TBM_CRASH_LEVER_DOWN">
+		<Clue name="TT:CLUE.TBM_CRASH_LEVER_DOWN"/>
+			<CheckpointDesc SubjectTT="TT:GAME.CHECKLIST_CRASH_LEVER" ExpectationTT="TT:GAME.CHECKLIST_DOWN"/>
+			<Test>
+				<TestValue>
+					<Operator OpType="EQUAL">
+						<Val Code="(L:XMLVAR_CrashLeverPos)"/>
+						<Val Value="0"/>
+					</Operator>
+				</TestValue>
+				<Action Copilot="True" Condition="TestValueFalse" Once="false" Code="0 (&gt;L:XMLVAR_CrashLeverPos) (L:XMLVAR_ElecGen) 2 != if{ (A:GENERAL ENG GENERATOR SWITCH:1, Bool) if{ (&gt;K:TOGGLE_MASTER_ALTERNATOR) } 2 (&gt;L:XMLVAR_ElecGen) } (L:XMLVAR_ElecSource) 2 != if{  (A:ELECTRICAL MASTER BATTERY, Bool) if{ (&gt;K:TOGGLE_MASTER_BATTERY) } 2 (&gt;L:XMLVAR_ElecSource) }"/>
+				<Instrument id="ELECTRICAL_Lever_GeneratorReset"/>
+			</Test>
+		</Checkpoint>
+
+		<Checkpoint Id="TBM_CRASH_LEVER_UP">
+		<Clue name="TT:CLUE.TBM_CRASH_LEVER_UP"/>
+			<CheckpointDesc SubjectTT="TT:GAME.CHECKLIST_CRASH_LEVER" ExpectationTT="TT:GAME.CHECKLIST_UP"/>
+			<Test>
+				<TestValue>
+					<Operator OpType="EQUAL">
+						<Val Code="(L:XMLVAR_CrashLeverPos)"/>
+						<Val Value="1"/>
+					</Operator>
+				</TestValue>
+				<Action Copilot="True" Condition="TestValueFalse" Once="false" Code="1 (&gt;L:XMLVAR_CrashLeverPos)"/>
+				<Instrument id="ELECTRICAL_Lever_GeneratorReset"/>
+			</Test>
+		</Checkpoint>
+
+		<Checkpoint Id="TBM_DE_ICE_SYSTEM_LIGHTS_TEST">
+		<Clue name="TT:CLUE.TBM_DE_ICE_SYSTEM_LIGHTS_TEST"/>
+			<CheckpointDesc SubjectTT="TT:GAME.CHECKLIST_DE_ICE_SYSTEM_LIGHTS" ExpectationTT="TT:GAME.CHECKLIST_TEST"/>
+			<Sequence SeqType="Ordered">
+				<Test>
+					<Duration Value="0.5" Cumulative="False"/>
+					<Instrument id="SAFETY_Push_Test"/>
+					<Once>TRUE</Once>
+					<TestValue>
+						<Operator OpType="EQUAL">
+							<Val Code="(L:XMLVAR_LTS_Test)"/>
+							<Val Value="1"/>
+						</Operator>
+					</TestValue>
+					<Action Copilot="True" Condition="TestValueFalse" Once="false" Code="1 (&gt;L:XMLVAR_LTS_Test)"/>
+					<Action Copilot="True" Condition="TestValueTrue" Once="false" SpecialAction ="waitforduration" Value="1.5"/>
+				</Test>
+			</Sequence>
+			<Action Copilot="True" Condition="END" Once="false" Code="0 (&gt;L:XMLVAR_LTS_Test)"/>
+		</Checkpoint>
+
+		<Checkpoint Id="TBM_FUEL_SEL_MAN">
+		<Clue name="TT:CLUE.TBM_FUEL_SEL_MAN"/>
+			<CheckpointDesc SubjectTT="TT:GAME.CHECKLIST_FUEL_SEL" ExpectationTT="TT:GAME.CHECKLIST_MAN"/>
+			<Test>
+				<TestValue>
+					<Operator OpType="EQUAL">
+						<Val Code="(L:XMLVAR_FuelSelectorAuto)"/>
+						<Val Value="0"/>
+					</Operator>
+				</TestValue>
+				<Action Copilot="True" Condition="TestValueFalse" Once="false" Code="0 (&gt;L:XMLVAR_FuelSelectorAuto)"/>
+				<Instrument id="FUEL_Switch_Selector"/>
+			</Test>
+		</Checkpoint>
+
+		<Checkpoint Id="TBM_FUEL_SEL_AUTO">
+		<Clue name="TT:CLUE.TBM_FUEL_SEL_AUTO"/>
+			<CheckpointDesc SubjectTT="TT:GAME.CHECKLIST_FUEL_SEL" ExpectationTT="TT:GAME.CHECKLIST_AUTO"/>
+			<Test>
+				<TestValue>
+					<Operator OpType="EQUAL">
+						<Val Code="(L:XMLVAR_FuelSelectorAuto)"/>
+						<Val Value="1"/>
+					</Operator>
+				</TestValue>
+				<Action Copilot="True" Condition="TestValueFalse" Once="false" Code="1 (&gt;L:XMLVAR_FuelSelectorAuto)"/>
+				<Instrument id="FUEL_Switch_Selector"/>
+			</Test>
+		</Checkpoint>
+
+		<Checkpoint Id="TBM_TRQ_100_PERCENT">
+		<Clue name="TT:CLUE.TBM_TRQ_100_PERCENT"/>
+			<CheckpointDesc SubjectTT="TT:GAME.CHECKLIST_TRQ" ExpectationTT="TT:GAME.CHECKLIST_100_PERCENT"/>
+			<Sequence SeqType="Ordered">
+				<Test>
+					<TestValue>
+						<Operator OpType="GREATER_OR_EQUAL">
+							<Val SimVarName="GENERAL ENG PROPELLER LEVER POSITION:1" Units="position 16k"/>
+							<Val Value="14745"/>
+						</Operator>
+					</TestValue>
+					<Action Copilot="True" Condition="TestValueFalse" Once="true" EventID="PROP_PITCH1_SET" EventParam="16384"/>
+					<Instrument id="THROTTLE_Lever"/>
+				</Test>
+				<Test>
+					<TestValue>
+						<Operator OpType="BETWEEN">
+							<Val SimVarName="TURB ENG MAX TORQUE PERCENT:1" Units="Percent"/>
+							<Val		Value="95"/>
+							<Val		Value="100"/>
+						</Operator>
+					</TestValue>
+					<Action Copilot="True" Condition="TestValueFalse" Once="true" EventID="THROTTLE_FULL"/>
+					<Instrument id="HTML:AS3000_MFD:Turbo_TorqueGauge"/>
+					<Instrument id="HTML:G3000_MFD:Turbo_TorqueGauge"/>
+				</Test>
+			</Sequence>
+		</Checkpoint>
+
+		<Checkpoint Id="TBM_LANDING_GEAR_LIGHTS_CHECK_DOWN_TEST">
+		<Clue name="TT:CLUE.TBM_LANDING_GEAR_LIGHTS_CHECK_DOWN_TEST"/>
+			<CheckpointDesc SubjectTT="TT:GAME.CHECKLIST_LANDING_GEAR_LIGHTS_CHECK_DOWN" ExpectationTT="TT:GAME.CHECKLIST_TEST"/>
+			<Sequence SeqType="Unordered">
+        <Duration>1</Duration>
+				<Test>
+					<Once>True</Once>
+					<Instrument id="LANDING_GEAR_Switch_CheckDown"/>
+					<TestValue>
+						<Val Code="(L:XMLVAR_Gear_Light_Test)"/>
+					</TestValue>
+					<Action Copilot="True" Condition="TestValueFalse" Once="true" Code="1 (&gt;L:XMLVAR_Gear_Light_Test_IsDown)"/>
+					<Action Copilot="True" Condition="TestValueTrue" Once="true" SpecialAction ="waitforduration" Value="1.5"/>
+				</Test>
+				<Test>
+					<Once>True</Once>
+					<Instrument id="LANDING_GEAR_Switch_LightTest"/>
+					<TestValue>
+						<Val Code="(L:XMLVAR_Gear_Check_Down)"/>
+					</TestValue>
+					<Action Copilot="True" Condition="Any" Once="true" Code="0 (&gt;L:XMLVAR_Gear_Light_Test_IsDown)"/>
+					<Action Copilot="True" Condition="TestValueFalse" Once="true" Code="1 (&gt;L:XMLVAR_Gear_Check_Down_IsDown)"/>
+					<Action Copilot="True" Condition="TestValueTrue" Once="true" SpecialAction ="waitforduration" Value="1.5"/>
+				</Test>
+			</Sequence>
+			<Action Copilot="True" Condition="End" Once="true" Code="0 (&gt;L:XMLVAR_Gear_Light_Test_IsDown)"/>
+			<Action Copilot="True" Condition="End" Once="true" Code="0 (&gt;L:XMLVAR_Gear_Check_Down_IsDown)"/>
+		</Checkpoint>
+
+		<!-- If these settings are used in other propeller planes, we might want to move this to the propeller library -->
+		<Checkpoint Id="TBM_THROTTLE_CUT_OFF">
+		<Clue name="TT:CLUE.TBM_THROTTLE_CUT_OFF"/> 
+			<CheckpointDesc SubjectTT="TT:GAME.CHECKLIST_THROTTLE" ExpectationTT="TT:GAME.CHECKLIST_CUT_OFF"/>
+			<Sequence SeqType="Ordered">
+				<Test>
+					<TestValue>
+						<Operator OpType="LESS">
+							<Val SimVarName="GENERAL ENG PROPELLER LEVER POSITION:1" Units="percent"/>
+							<Val Value="0"/>
+						</Operator>
+					</TestValue>
+					<Action Copilot="True" Condition="TestValueFalse" Once="true" EventID="PROP_PITCH1_SET" EventParam="-4096"/>
+					<Instrument id="THROTTLE_Lever"/>
+				</Test>
+				<Test>
+					<TestValue>
+						<Operator OpType="LESS_OR_EQUAL">
+							<Val SimVarName="GENERAL ENG THROTTLE LEVER POSITION:1" Units="percent"/>
+							<Val Value="0"/>
+						</Operator>
+					</TestValue>
+					<Action Copilot="True" Condition="TestValueFalse" Once="true" EventID="THROTTLE1_SET" EventParam="0"/>
+					<Instrument id="THROTTLE_Lever"/>
+				</Test>
+				<Test>
+					<TestValue>
+						<Operator OpType="NOT">
+							<Val SimVarName="GENERAL ENG FUEL VALVE:1" Units="Boolean"/>
+						</Operator>
+					</TestValue>
+					<Action Copilot="True" Condition="TestValueFalse" Once="true" EventID="TOGGLE_FUEL_VALVE_ENG1"/>
+					<Instrument id="THROTTLE_Lever"/>
+				</Test>
+			</Sequence>
+		</Checkpoint>
+
+		<Checkpoint Id="TBM_THROTTLE_SET_LOIDLE_WHEN_NG_13">
+		<Clue name="TT:CLUE.TBM_THROTTLE_SET_LOIDLE_WHEN_NG_13"/>
+			<CheckpointDesc SubjectTT="TT:GAME.CHECKLIST_THROTTLE" ExpectationTT="TT:GAME.CHECKLIST_SET_LOIDLE_WHEN_NG_13"/>
+			<Sequence SeqType="Ordered">
+				<Test>
+					<Instrument id="HTML:AS3000_MFD:Turbo_NgGauge"/>
+					<Instrument id="HTML:G3000_MFD:Turbo_NgGauge"/>
+					<TestValue>
+						<Operator OpType="GREATER_OR_EQUAL">
+							<Val SimVarName="TURB ENG N1:1" Units="percent"/>
+							<Val Value="13"/>
+						</Operator>
+					</TestValue>
+					<Action Copilot="True" Condition="TestValueFalse" Once="false" SpecialAction="WaitForUserToDoIt"/>
+				</Test>	
+				<!-- LO Idle -->	
+				<Sequence SeqType="Ordered">	
+					<Once>TRUE</Once>	
+					<Test>
+						<TestValue>
+							<Operator OpType="LESS_OR_EQUAL">
+								<Val SimVarName="GENERAL ENG PROPELLER LEVER POSITION:1" Units="position 16k"/>
+								<Val Value="0"/>
+							</Operator>
+						</TestValue>
+						<Action Copilot="True" Condition="TestValueFalse" Once="true" EventID="PROP_PITCH1_SET" EventParam="-4096"/>
+						<Instrument id="THROTTLE_Lever"/>
+					</Test>		
+					<Test>
+						<TestValue>
+							<Operator OpType="EQUAL" Tolerance="500">
+								<Val SimVarName="GENERAL ENG THROTTLE LEVER POSITION:1" Units="position 16k"/>
+								<Val Value="0"/>
+							</Operator>
+						</TestValue>
+						<Action Copilot="True" Condition="TestValueFalse" Once="true" EventID="THROTTLE1_SET" EventParam="0"/>
+						<Action Copilot="True" Condition="TestValueTrue" Once="true" SpecialAction ="waitforduration" Value="1.0"/>
+						<Instrument id="THROTTLE_Lever"/>
+					</Test>	
+					<Test>
+						<TestValue>
+							<Val SimVarName="GENERAL ENG FUEL VALVE:1" Units="Boolean"/>
+						</TestValue>
+						<Action Copilot="True" Condition="TestValueFalse" Once="true" EventID="TOGGLE_FUEL_VALVE_ENG1"/>
+						<Instrument id="THROTTLE_Lever"/>
+					</Test>	
+				</Sequence>
+			</Sequence>
+		</Checkpoint>
+
+		<Checkpoint Id="TBM_THROTTLE_LO_IDLE_TO_FLIGHT_IDLE">
+		<Clue name="TT:CLUE.TBM_THROTTLE_LO_IDLE_TO_FLIGHT_IDLE"/>
+			<CheckpointDesc SubjectTT="TT:GAME.CHECKLIST_THROTTLE" ExpectationTT="TT:GAME.CHECKLIST_LO_IDLE_TO_FLIGHT_IDLE"/>
+			<!-- Flight Idle -->	
+			<Sequence SeqType="Ordered">	
+				<Once>TRUE</Once>	
+				<Test>
+					<TestValue>
+						<Operator OpType="GREATER_OR_EQUAL">
+							<Val SimVarName="GENERAL ENG PROPELLER LEVER POSITION:1" Units="position 16k"/>
+							<Val Value="14745"/>
+						</Operator>
+					</TestValue>
+					<Action Copilot="True" Condition="TestValueFalse" Once="true" EventID="PROP_PITCH1_SET" EventParam="16384"/>
+					<Instrument id="THROTTLE_Lever"/>
+				</Test>		
+				<Test>
+					<TestValue>
+						<Operator OpType="EQUAL" Tolerance="500">
+							<Val SimVarName="GENERAL ENG THROTTLE LEVER POSITION:1" Units="position 16k"/>
+							<Val Value="4915"/>
+						</Operator>
+					</TestValue>
+					<Action Copilot="True" Condition="TestValueFalse" Once="true" EventID="THROTTLE1_SET" EventParam="4915"/>
+					<Action Copilot="True" Condition="TestValueTrue" Once="true" SpecialAction ="waitforduration" Value="1.0"/>
+					<Instrument id="THROTTLE_Lever"/>
+				</Test>
+			</Sequence>
+		</Checkpoint>
+
+		<Checkpoint Id="TBM_THROTTLE_FEATHER_TWICE">
+		<Clue name="TT:CLUE.TBM_THROTTLE_FEATHER_TWICE"/>
+		<Feedback name="TT:FEEDBACK.TBM_THROTTLE_FEATHER_TWICE" />
+			<CheckpointDesc SubjectTT="TT:GAME.CHECKLIST_THROTTLE" ExpectationTT="TT:GAME.CHECKLIST_FEATHER_TWICE"/>
+			<Sequence SeqType="Ordered">	
+				<!-- Flight Idle -->	
+				<Sequence SeqType="Ordered">	
+					<Once>TRUE</Once>	
+					<Test>
+						<TestValue>
+							<Operator OpType="GREATER_OR_EQUAL">
+								<Val SimVarName="GENERAL ENG PROPELLER LEVER POSITION:1" Units="position 16k"/>
+								<Val Value="14745"/>
+							</Operator>
+						</TestValue>
+						<Action Copilot="True" Condition="TestValueFalse" Once="true" EventID="PROP_PITCH1_SET" EventParam="16384"/>
+						<Instrument id="THROTTLE_Lever"/>
+					</Test>		
+					<Test>
+						<TestValue>
+							<Operator OpType="EQUAL" Tolerance="500">
+								<Val SimVarName="GENERAL ENG THROTTLE LEVER POSITION:1" Units="position 16k"/>
+								<Val Value="4915"/>
+							</Operator>
+						</TestValue>
+						<Action Copilot="True" Condition="TestValueFalse" Once="true" EventID="THROTTLE1_SET" EventParam="4915"/>
+						<Action Copilot="True" Condition="TestValueTrue" Once="true" SpecialAction ="waitforduration" Value="1.0"/>
+						<Instrument id="THROTTLE_Lever"/>
+					</Test>
+				</Sequence>
+				<!-- LO Idle -->	
+				<Sequence SeqType="Ordered">	
+					<Once>TRUE</Once>	
+					<Test>
+						<TestValue>
+							<Operator OpType="LESS_OR_EQUAL">
+								<Val SimVarName="GENERAL ENG PROPELLER LEVER POSITION:1" Units="position 16k"/>
+								<Val Value="0"/>
+							</Operator>
+						</TestValue>
+						<Action Copilot="True" Condition="TestValueFalse" Once="true" EventID="PROP_PITCH1_SET" EventParam="-4096"/>
+						<Instrument id="THROTTLE_Lever"/>
+					</Test>		
+					<Test>
+						<TestValue>
+							<Operator OpType="EQUAL" Tolerance="500">
+								<Val SimVarName="GENERAL ENG THROTTLE LEVER POSITION:1" Units="position 16k"/>
+								<Val Value="0"/>
+							</Operator>
+						</TestValue>
+						<Action Copilot="True" Condition="TestValueFalse" Once="true" EventID="THROTTLE1_SET" EventParam="0"/>
+						<Action Copilot="True" Condition="TestValueTrue" Once="true" SpecialAction ="waitforduration" Value="1.0"/>
+						<Instrument id="THROTTLE_Lever"/>
+					</Test>	
+					<Test>
+						<TestValue>
+							<Val SimVarName="GENERAL ENG FUEL VALVE:1" Units="Boolean"/>
+						</TestValue>
+						<Action Copilot="True" Condition="TestValueFalse" Once="true" EventID="TOGGLE_FUEL_VALVE_ENG1"/>
+						<Instrument id="THROTTLE_Lever"/>
+					</Test>	
+				</Sequence>
+				<!-- Flight Idle -->	
+				<Sequence SeqType="Ordered">	
+					<Once>TRUE</Once>	
+					<Test>
+						<TestValue>
+							<Operator OpType="GREATER_OR_EQUAL">
+								<Val SimVarName="GENERAL ENG PROPELLER LEVER POSITION:1" Units="position 16k"/>
+								<Val Value="14745"/>
+							</Operator>
+						</TestValue>
+						<Action Copilot="True" Condition="TestValueFalse" Once="true" EventID="PROP_PITCH1_SET" EventParam="16384"/>
+						<Instrument id="THROTTLE_Lever"/>
+					</Test>		
+					<Test>
+						<TestValue>
+							<Operator OpType="EQUAL" Tolerance="500">
+								<Val SimVarName="GENERAL ENG THROTTLE LEVER POSITION:1" Units="position 16k"/>
+								<Val Value="4915"/>
+							</Operator>
+						</TestValue>
+						<Action Copilot="True" Condition="TestValueFalse" Once="true" EventID="THROTTLE1_SET" EventParam="4915"/>
+						<Action Copilot="True" Condition="TestValueTrue" Once="true" SpecialAction ="waitforduration" Value="1.0"/>
+						<Instrument id="THROTTLE_Lever"/>
+					</Test>
+				</Sequence>
+				<!-- LO Idle -->	
+				<Sequence SeqType="Ordered">	
+					<Once>TRUE</Once>	
+					<Test>
+						<TestValue>
+							<Operator OpType="LESS_OR_EQUAL">
+								<Val SimVarName="GENERAL ENG PROPELLER LEVER POSITION:1" Units="position 16k"/>
+								<Val Value="0"/>
+							</Operator>
+						</TestValue>
+						<Action Copilot="True" Condition="TestValueFalse" Once="true" EventID="PROP_PITCH1_SET" EventParam="-4096"/>
+						<Instrument id="THROTTLE_Lever"/>
+					</Test>		
+					<Test>
+						<TestValue>
+							<Operator OpType="EQUAL" Tolerance="500">
+								<Val SimVarName="GENERAL ENG THROTTLE LEVER POSITION:1" Units="position 16k"/>
+								<Val Value="0"/>
+							</Operator>
+						</TestValue>
+						<Action Copilot="True" Condition="TestValueFalse" Once="true" EventID="THROTTLE1_SET" EventParam="0"/>
+						<Action Copilot="True" Condition="TestValueTrue" Once="true" SpecialAction ="waitforduration" Value="1.0"/>
+						<Instrument id="THROTTLE_Lever"/>
+					</Test>	
+				</Sequence>
+				<!-- Flight Idle -->	
+				<Sequence SeqType="Ordered">	
+					<Once>TRUE</Once>	
+					<Test>
+						<TestValue>
+							<Operator OpType="GREATER_OR_EQUAL">
+								<Val SimVarName="GENERAL ENG PROPELLER LEVER POSITION:1" Units="position 16k"/>
+								<Val Value="14745"/>
+							</Operator>
+						</TestValue>
+						<Action Copilot="True" Condition="TestValueFalse" Once="true" EventID="PROP_PITCH1_SET" EventParam="16384"/>
+						<Instrument id="THROTTLE_Lever"/>
+					</Test>		
+					<Test>
+						<TestValue>
+							<Operator OpType="EQUAL" Tolerance="500">
+								<Val SimVarName="GENERAL ENG THROTTLE LEVER POSITION:1" Units="position 16k"/>
+								<Val Value="4915"/>
+							</Operator>
+						</TestValue>
+						<Action Copilot="True" Condition="TestValueFalse" Once="true" EventID="THROTTLE1_SET" EventParam="4915"/>
+						<Action Copilot="True" Condition="TestValueTrue" Once="true" SpecialAction ="waitforduration" Value="1.0"/>
+						<Instrument id="THROTTLE_Lever"/>
+					</Test>
+				</Sequence>
+			</Sequence>
+		</Checkpoint>
+
+		<Checkpoint Id="TBM_THROTTLE_FLIGHT_IDLE_FOR_2_MIN">
+		<Clue name="TT:CLUE.TBM_THROTTLE_FLIGHT_IDLE_FOR_2_MIN"/>
+		<Feedback name="TT:FEEDBACK.TBM_THROTTLE_FLIGHT_IDLE_FOR_2_MIN" DurationTimer="True" />
+			<CheckpointDesc SubjectTT="TT:GAME.CHECKLIST_THROTTLE" ExpectationTT="TT:GAME.CHECKLIST_FLIGHT_IDLE_FOR_2_MIN"/>
+			<!-- Flight Idle -->	
+			<Sequence SeqType="Parallel">
+        <Duration Value="120" Cumulative="False"/>
+        <Test>
+					<TestValue>
+						<Operator OpType="GREATER_OR_EQUAL">
+							<Val SimVarName="GENERAL ENG PROPELLER LEVER POSITION:1" Units="position 16k"/>
+							<Val Value="14745"/>
+						</Operator>
+					</TestValue>
+					<Action Copilot="True" Condition="TestValueFalse" Once="true" EventID="PROP_PITCH1_SET" EventParam="16384"/>
+									<Instrument id="THROTTLE_Lever"/>
+				</Test>		
+				<Test>
+					<TestValue>
+						<Operator OpType="EQUAL" Tolerance="1000">
+							<Val SimVarName="GENERAL ENG THROTTLE LEVER POSITION:1" Units="position 16k"/>
+							<Val Value="4915"/>
+						</Operator>
+					</TestValue>
+					<Action Copilot="True" Condition="TestValueFalse" Once="true" EventID="THROTTLE1_SET" EventParam="4915"/>
+					<Instrument id="THROTTLE_Lever"/>
+				</Test>
+			</Sequence>
+		</Checkpoint>
+
+		<Checkpoint Id="TBM_THROTTLE_LO_IDLE_FOR_15_SEC">
+		<Clue name="TT:CLUE.TBM_THROTTLE_LO_IDLE_FOR_15_SEC"/>
+		<Feedback name="TT:FEEDBACK.TBM_THROTTLE_LO_IDLE_FOR_15_SEC" DurationTimer="True" />
+			<CheckpointDesc SubjectTT="TT:GAME.CHECKLIST_THROTTLE" ExpectationTT="TT:GAME.CHECKLIST_LO_IDLE_FOR_15_SEC"/>
+			<!-- LO Idle -->	
+			<Sequence SeqType="Parallel">
+        <Duration Value="15" Cumulative="False"/>
+        <Once>TRUE</Once>	
+				<Test>
+					<TestValue>
+						<Operator OpType="LESS_OR_EQUAL">
+							<Val SimVarName="GENERAL ENG PROPELLER LEVER POSITION:1" Units="position 16k"/>
+							<Val Value="0"/>
+						</Operator>
+					</TestValue>
+					<Action Copilot="True" Condition="TestValueFalse" Once="true" EventID="PROP_PITCH1_SET" EventParam="-4096"/>
+				
+					<Instrument id="THROTTLE_Lever"/>
+				</Test>		
+				<Test>
+					<TestValue>
+						<Operator OpType="EQUAL" Tolerance="500">
+							<Val SimVarName="GENERAL ENG THROTTLE LEVER POSITION:1" Units="position 16k"/>
+							<Val Value="0"/>
+						</Operator>
+					</TestValue>
+					<Action Copilot="True" Condition="TestValueFalse" Once="true" EventID="THROTTLE1_SET" EventParam="0"/>
+					<Instrument id="THROTTLE_Lever"/>
+				</Test>	
+				<Test>
+					<TestValue>
+						<Val SimVarName="GENERAL ENG FUEL VALVE:1" Units="Boolean"/>
+					</TestValue>
+					<Action Copilot="True" Condition="TestValueFalse" Once="true" EventID="TOGGLE_FUEL_VALVE_ENG1"/>
+					<Instrument id="THROTTLE_Lever"/>
+				</Test>	
+			</Sequence>
+		</Checkpoint>
+
+		<Checkpoint Id="TBM_OIL_PRESS_TEMP_CHECK">
+		<Clue name="TT:CLUE.TBM_OIL_PRESS_TEMP_CHECK"/>
+			<CheckpointDesc SubjectTT="TT:GAME.CHECKLIST_OIL_PRESS_TEMP" ExpectationTT="TT:GAME.CHECKLIST_CHECK"/>
+			<Sequence SeqType="Unordered">
+				<Test>
+					<Instrument id="HTML:AS3000_MFD:Turbo_OilPressGauge"/>
+					<Instrument id="HTML:AS3000_MFD:Turbo_OilTempGauge"/>
+					<Instrument id="HTML:G3000_MFD:Turbo_OilPressGauge"/>
+					<Instrument id="HTML:G3000_MFD:Turbo_OilTempGauge"/>
+					<TestValue>
+						<Operator OpType="BETWEEN">
+							<Val SimVarName="ENG OIL PRESSURE:1" Units="psi"/>
+							<Val Value="60"/>
+							<Val Value="135"/>
+						</Operator>
+					</TestValue>
+					<Instrument id="HIGHLIGHT_OIL_PRESS"/>
+					<Action Copilot="True" Condition="TestValueFalse" Once="false" SpecialAction="WaitForUserToDoIt"/>
+				</Test>
+				<Test>
+					<TestValue>
+						<Operator OpType="BETWEEN">
+							<Val SimVarName="ENG OIL TEMPERATURE:1" Units="celsius"/>
+							<Val Value="0"/>
+							<Val Value="104"/>
+						</Operator>
+					</TestValue>
+					<Action Copilot="True" Condition="TestValueFalse" Once="false" SpecialAction="WaitForUserToDoIt"/>
+				</Test>
+			</Sequence>
+		</Checkpoint>
+
+		<Checkpoint Id="TBM_FUEL_SEL_SHIFT_BUTTON_TEST">
+		<Clue name="TT:CLUE.TBM_FUEL_SEL_SHIFT_BUTTON_TEST"/>
+			<CheckpointDesc SubjectTT="TT:GAME.CHECKLIST_FUEL_SEL_SHIFT_BUTTON" ExpectationTT="TT:GAME.CHECKLIST_TEST"/>
+			<Action Condition="Init" StoreVar="InitialFuelTankSelector">
+				<Val Code="(A:FUEL TANK SELECTOR:1, Enum)"/>
+			</Action>
+			<Sequence SeqType="Ordered">
+				<Test>
+					<Instrument id="FUEL_Push_Small"/>
+					<TestValue>
+						<Val Code="(L:_FuelTankShiftPressed)"/>
+					</TestValue>
+					<Action Copilot="False" Condition="TestValueFalse" Once="false" StoreVar="InitialFuelTankSelector">
+						<Val Code="(A:FUEL TANK SELECTOR:1, Enum)"/>
+					</Action>
+					<Action Copilot="True" Condition="TestValueFalse" Once="false" Code="
+					1 (&gt;L:_FuelTankShiftPressed)
+					(A:FUEL TANK SELECTOR:1, Enum) 2 == if{
+						(&gt;K:FUEL_SELECTOR_RIGHT)
+					} els{
+						(&gt;K:FUEL_SELECTOR_LEFT)
+					}
+					0 (&gt;I:TBM930_FuelSelectorAutoTimer)
+				"/>
+				</Test>
+				<Test>
+					<TestValue>
+						<Operator OpType="NOT">
+							<Operator OpType="EQUAL">
+								<Val ReadVar="InitialFuelTankSelector"/>
+								<Val Code="(A:FUEL TANK SELECTOR:1, Enum)"/>
+							</Operator>
+						</Operator>
+					</TestValue>
+					<Action Copilot="True" Condition="TestValueFalse" Once="false" SpecialAction="WaitForUserToDoIt"/>
+				</Test>
+			</Sequence>
+		</Checkpoint>
+
+		<Checkpoint Id="TBM_PRESSURIZATION_CHECK">
+		<Clue name="TT:CLUE.TBM_PRESSURIZATION_CHECK"/>
+			<CheckpointDesc SubjectTT="TT:GAME.CHECKLIST_PRESSURIZATION" ExpectationTT="TT:GAME.CHECKLIST_CHECK"/>
+			<Sequence SeqType="Unordered">
+				<Test>
+					<TestValue>
+						<Operator OpType="LESS" Tolerance="0.2">
+							<Val SimVarName="PRESSURIZATION PRESSURE DIFFERENTIAL" Units="psi"/>
+							<Val Value="6.4"/>
+						</Operator>
+					</TestValue>
+					<Action Copilot="True" Condition="TestValueFalse" Once="false" SpecialAction="WaitForUserToDoIt"/>
+				</Test>
+				<Test>
+					<TestValue>
+						<Operator OpType="LESS_OR_EQUAL">
+							<Val SimVarName="PRESSURIZATION CABIN ALTITUDE" Units="feet"/>
+							<Val Value="10000"/>
+						</Operator>
+					</TestValue>
+					<Action Copilot="True" Condition="TestValueFalse" Once="false" SpecialAction="WaitForUserToDoIt"/>
+				</Test>
+			</Sequence>
+		</Checkpoint>
+
+		<Checkpoint Id="TBM_AP_TRIMS_OFF">
+		<Clue name="TT:CLUE.TBM_AP_TRIMS_OFF"/>
+			<CheckpointDesc SubjectTT="TT:GAME.CHECKLIST_AP_TRIMS" ExpectationTT="TT:GAME.CHECKLIST_OFF"/>
+      <Sequence SeqType="Unordered">
+        <Test>
+				<Instrument id="HANDLING_Switch_AutopilotTrim"/>
+				<TestValue>
+					<Operator OpType="AND">
+						<Val SimVarName="RUDDER TRIM DISABLED" Units="Bool"/>
+						<Val SimVarName="AILERON TRIM DISABLED" Units="Bool"/>
+					</Operator>
+				</TestValue>
+				<Action Copilot="True" Condition="TestValueFalse" Once="true" EventID="RUDDER_TRIM_DISABLED_SET" EventParam="1"/>
+				<Action Copilot="True" Condition="TestValueFalse" Once="true" EventID="AILERON_TRIM_DISABLED_SET" EventParam="1"/>
+				<!-- TODO Add keys for Aileron/Rudder trim disable -->
+			  </Test>
+        <Test>
+          <Instrument id="HANDLING_Switch_AutopilotTrim"/>
+          <TestValue>
+            <Val SimVarName="AUTOPILOT DISENGAGED" Units="Bool"/>
+            </TestValue>
+          <Action Copilot="True" Condition="TestValueFalse" Once="true" EventID="AUTOPILOT_DISENGAGE_TOGGLE"/>
+          <!-- TODO Add keys for Aileron/Rudder trim disable -->
+        </Test>
+      </Sequence>
+		</Checkpoint>
+
+		<Checkpoint Id="TBM_AP_TRIMS_ON">
+		<Clue name="TT:CLUE.TBM_AP_TRIMS_ON"/>
+			<CheckpointDesc SubjectTT="TT:GAME.CHECKLIST_AP_TRIMS" ExpectationTT="TT:GAME.CHECKLIST_ON"/>
+			<Test>
+				<Instrument id="HANDLING_Switch_AutopilotTrim"/>
+				<TestValue>
+					<Operator OpType="AND">
+						<Operator OpType="NOT">
+							<Val SimVarName="RUDDER TRIM DISABLED" Units="Bool"/>
+						</Operator>
+						<Operator OpType="AND">
+							<Operator OpType="NOT">
+								<Val SimVarName="AILERON TRIM DISABLED" Units="Bool"/>
+							</Operator>
+							<Operator OpType="NOT">
+								<Val SimVarName="AUTOPILOT DISENGAGED" Units="Bool"/>
+							</Operator>
+						</Operator>
+					</Operator>
+				</TestValue>
+				<Action Copilot="True" Condition="TestValueFalse" Once="true" EventID="AUTOPILOT_DISENGAGE_TOGGLE"/>
+				<Action Copilot="True" Condition="TestValueFalse" Once="true" EventID="RUDDER_TRIM_DISABLED_SET" EventParam="0"/>
+				<Action Copilot="True" Condition="TestValueFalse" Once="true" EventID="AILERON_TRIM_DISABLED_SET" EventParam="0"/>
+				<!-- TODO Add keys for Aileron/Rudder trim disable -->
+			</Test>
+   	</Checkpoint>
+
+		<Checkpoint Id="TBM_PITOT_L_PITOT_R_AND_STALL_HTR_ON">
+		<Clue name="TT:CLUE.TBM_PITOT_L_PITOT_R_AND_STALL_HTR_ON"/>
+			<CheckpointDesc SubjectTT="TT:GAME.CHECKLIST_PITOT_L_PITOT_R_AND_STALL_HTR" ExpectationTT="TT:GAME.CHECKLIST_ON"/>		
+			<Test>
+				<Instrument id="DEICE_Switch_Pitot_L"/>
+				<Instrument id="DEICE_Switch_Pitot_R"/>
+				<TestValue>
+					<Val SimVarName="PITOT HEAT" Units="Bool"/>
+				</TestValue>
+				<Action Copilot="True" Condition="TestValueFalse" Once="true" EventID="PITOT_HEAT_TOGGLE"/>
+			</Test>
+		</Checkpoint>
+
+	</Checklist.CheckpointLibrary>
+</SimBase.Document>
